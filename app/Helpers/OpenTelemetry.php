@@ -9,7 +9,6 @@ use OpenTelemetry\API\Trace\NonRecordingSpan;
 use OpenTelemetry\API\Trace\Propagation\TraceContextValidator;
 use OpenTelemetry\API\Trace\Span;
 use OpenTelemetry\API\Trace\SpanContext;
-use OpenTelemetry\API\Trace\SpanContextInterface;
 use OpenTelemetry\API\Trace\SpanContextValidator;
 use OpenTelemetry\API\Trace\SpanKind;
 use OpenTelemetry\API\Trace\TraceFlags;
@@ -27,7 +26,7 @@ class OpenTelemetry
         $tracer = Globals::tracerProvider()->getTracer(
             $serviceName ?? config('open-telemetry.service.name'),
             $version ?? config('open-telemetry.service.version'),
-            'https://opentelemetry.io/schemas/1.24.0',
+            'https://opentelemetry.io/schemas/1.24.0'
         );
         $parent = Span::getCurrent();
         if ($parent instanceof NonRecordingSpan) {
@@ -91,7 +90,7 @@ class OpenTelemetry
         return Globals::meterProvider()->getMeter(
             $serviceName ?? config('open-telemetry.service.name'),
             $serviceVersion ?? config('open-telemetry.service.version'),
-            'https://opentelemetry.io/schemas/1.24.0',
+            'https://opentelemetry.io/schemas/1.24.0'
         );
     }
 }

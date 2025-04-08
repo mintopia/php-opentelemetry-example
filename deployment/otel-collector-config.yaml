@@ -18,7 +18,9 @@ exporters:
     log_group_name: open-telemetry-test
     log_stream_name: metrics
     namespace: open-telemetry-test
-    dimension_rollup_option: '1'
+    dimension_rollup_option: NoDimensionRollup
+    resource_to_telemetry_conversion:
+      enabled: true
     log_retention: 60
   awscloudwatchlogs:
     log_group_name: open-telemetry-test

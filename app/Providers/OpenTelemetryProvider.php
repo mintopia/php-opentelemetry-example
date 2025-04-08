@@ -2,11 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
-use OpenTelemetry\API\Trace\SpanInterface;
-use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\Contrib\Otlp\ContentTypes;
 use OpenTelemetry\Contrib\Otlp\LogsExporter;
 use OpenTelemetry\Contrib\Otlp\MetricExporter;
@@ -50,6 +47,7 @@ class OpenTelemetryProvider extends ServiceProvider
             ResourceAttributes::SERVICE_NAME => config('open-telemetry.service.name'),
             ResourceAttributes::SERVICE_VERSION => config('open-telemetry.service.version'),
             ResourceAttributes::DEPLOYMENT_ENVIRONMENT_NAME => config('open-telemetry.environment'),
+            ResourceAttributes::HOST_NAME => getenv('HOSTNAME'),
         ])));
         $tracesEndpoint = config('open-telemetry.endpoints.traces');
         $spanExporter = new SpanExporter(
