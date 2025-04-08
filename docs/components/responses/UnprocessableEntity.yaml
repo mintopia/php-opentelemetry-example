@@ -1,0 +1,21 @@
+description: >-
+  The request could not be processed. You should check the body of the
+  error for more details.
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          examples:
+          - The given data was invalid.
+        errors:
+          type: object
+          description: An object containing the errors for each field in the input
+          examples:
+            - name:
+              - The name field is required
+              - The name field must be more than 8 characters
+              hostname:
+              - the hostname field is required

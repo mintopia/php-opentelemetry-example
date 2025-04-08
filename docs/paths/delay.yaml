@@ -1,0 +1,11 @@
+get:
+  tags:
+    - Traces
+  summary: Delay
+  description: Includes a child trace and delays execution for 1 second.
+  operationId: delay
+  security:
+    - {}
+  responses:
+    '204':
+      description: Successful Request

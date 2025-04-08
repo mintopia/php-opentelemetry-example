@@ -1,0 +1,46 @@
+services:
+    telemetry:
+        build:
+            context: .
+            dockerfile: ./docker/develop/Dockerfile
+        restart: unless-stopped
+        volumes:
+            - ./:/app
+        depends_on:
+            - redis
+    scheduler:
+        build:
+            context: .
+            dockerfile: ./docker/develop/Dockerfile
+        restart: unless-stopped
+        volumes:
+            - ./:/app
+        depends_on:
+            - redis
+        entrypoint: [ "php", "artisan", "schedule:work" ]
+        healthcheck:
+            disable: true
+
+    artisan:
+        build:
+            dockerfile: ./docker/develop/Dockerfile
+        entrypoint: [ "php", "artisan" ]
+        user: "1000"
+        volumes:
+            - ./:/app
+        depends_on:
+            - redis
+        profiles: [ "artisan" ]
+        healthcheck:
+            disable: true
+
+    redis:
+        image: redis:6.2.6
+        restart: unless-stopped
+
+    collector:
+        image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+        volumes:
+            - ./otel-collector-config.yaml:/etc/otel-agent-config.yaml
+        restart: unless-stopped
+        command: ["--config=/etc/otel-agent-config.yaml"]

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mintopia - PHP OpenTelemetry Example</title>
+    <!-- needed for adaptive design -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!--
+    ReDoc uses font options from the parent element
+    So override default browser styles
+    -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="https://cdn.redocly.com/redoc/v2.4.0/bundles/redoc.standalone.js"></script><style data-styled="true" data-styled-version="6.1.17">.hJuoxX{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.hJuoxX{width:100%;padding:40px 40px;}}/*!sc*/
+.tJLWz{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.tJLWz{width:100%;padding:0px 40px;}}/*!sc*/
+data-styled.g4[id="sc-fWnslK"]{content:"hJuoxX,tJLWz,"}/*!sc*/
+.bTqehu{padding:40px 0;}/*!sc*/
+.bTqehu:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.bTqehu>.bTqehu:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.bTqehu{padding:0;}}/*!sc*/
+.ftfFlx{padding:40px 0;position:relative;}/*!sc*/
+.ftfFlx:last-child{min-height:calc(100vh + 1px);}/*!sc*/
+.ftfFlx>.ftfFlx:last-child{min-height:initial;}/*!sc*/
+@media print,screen and (max-width: 75rem){.ftfFlx{padding:0;}}/*!sc*/
+.ftfFlx:not(:last-of-type):after{position:absolute;bottom:0;width:100%;display:block;content:'';border-bottom:1px solid rgba(0, 0, 0, 0.2);}/*!sc*/
+data-styled.g5[id="sc-dIMoHT"]{content:"bTqehu,ftfFlx,"}/*!sc*/
+.rcGrS{width:40%;color:#ffffff;background-color:#263238;padding:0 40px;}/*!sc*/
+@media print,screen and (max-width: 75rem){.rcGrS{width:100%;padding:40px 40px;}}/*!sc*/
+data-styled.g6[id="sc-iQQCXo"]{content:"rcGrS,"}/*!sc*/
+.ijAuiF{background-color:#263238;}/*!sc*/
+data-styled.g7[id="sc-gDpztx"]{content:"ijAuiF,"}/*!sc*/
+.ipybeG{display:flex;width:100%;padding:0;}/*!sc*/
+@media print,screen and (max-width: 75rem){.ipybeG{flex-direction:column;}}/*!sc*/
+data-styled.g8[id="sc-kpOvIu"]{content:"ipybeG,"}/*!sc*/
+.Xavsg{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#333333;}/*!sc*/
+data-styled.g9[id="sc-icnseD"]{content:"Xavsg,"}/*!sc*/
+.ivNaNl{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;margin:0 0 20px;}/*!sc*/
+data-styled.g10[id="sc-jMsorb"]{content:"ivNaNl,"}/*!sc*/
+.HmsNH{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.27em;line-height:1.6em;color:#333333;}/*!sc*/
+data-styled.g11[id="sc-cXawGu"]{content:"HmsNH,"}/*!sc*/
+.esvUOo{color:#ffffff;}/*!sc*/
+data-styled.g12[id="sc-jJAtPt"]{content:"esvUOo,"}/*!sc*/
+.crXcll{border-bottom:1px solid rgba(38, 50, 56, 0.3);margin:1em 0 1em 0;color:rgba(38, 50, 56, 0.5);font-weight:normal;text-transform:uppercase;font-size:0.929em;line-height:20px;}/*!sc*/
+data-styled.g13[id="sc-cUiCeM"]{content:"crXcll,"}/*!sc*/
+.jRyfmD{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.jRyfmD:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+h1:hover>.jRyfmD::before,h2:hover>.jRyfmD::before,.jRyfmD:hover::before{visibility:visible;}/*!sc*/
+data-styled.g14[id="sc-jScdur"]{content:"jRyfmD,"}/*!sc*/
+.enjdhx{height:18px;width:18px;min-width:18px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.jvLsrI{height:1.3em;width:1.3em;min-width:1.3em;vertical-align:middle;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.bKFTgj{height:1.5em;width:1.5em;min-width:1.5em;vertical-align:middle;float:left;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.bKFTgj polygon{fill:#1d8127;}/*!sc*/
+.hopFSn{height:20px;width:20px;min-width:20px;vertical-align:middle;float:right;transition:transform 0.2s ease-out;transform:rotateZ(0);}/*!sc*/
+.hopFSn polygon{fill:white;}/*!sc*/
+.ecvXEv{height:1.5em;width:1.5em;min-width:1.5em;vertical-align:middle;float:left;transition:transform 0.2s ease-out;transform:rotateZ(-90deg);}/*!sc*/
+.ecvXEv polygon{fill:#d41f1c;}/*!sc*/
+data-styled.g15[id="sc-dcKlJK"]{content:"enjdhx,jvLsrI,bKFTgj,hopFSn,ecvXEv,"}/*!sc*/
+.krjGtn{border-left:1px solid #2be8da;box-sizing:border-box;position:relative;padding:10px 10px 10px 0;}/*!sc*/
+@media screen and (max-width: 50rem){.krjGtn{display:block;overflow:hidden;}}/*!sc*/
+tr:first-of-type>.krjGtn,tr.last>.krjGtn{border-left-width:0;background-position:top left;background-repeat:no-repeat;background-size:1px 100%;}/*!sc*/
+tr:first-of-type>.krjGtn{background-image:linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 22px,
+      #2be8da 22px,
+      #2be8da 100%
+    );}/*!sc*/
+tr.last>.krjGtn{background-image:linear-gradient(
+      to bottom,
+      #2be8da 0%,
+      #2be8da 22px,
+      transparent 22px,
+      transparent 100%
+    );}/*!sc*/
+tr.last+tr>.krjGtn{border-left-color:transparent;}/*!sc*/
+tr.last:first-child>.krjGtn{background:none;border-left-color:transparent;}/*!sc*/
+data-styled.g18[id="sc-lixPIL"]{content:"krjGtn,"}/*!sc*/
+.txOzo{vertical-align:top;line-height:20px;white-space:nowrap;font-size:13px;font-family:Courier,monospace;}/*!sc*/
+.txOzo.deprecated{text-decoration:line-through;color:#707070;}/*!sc*/
+data-styled.g20[id="sc-dFaThA"]{content:"txOzo,"}/*!sc*/
+.jTsDbk{border-bottom:1px solid #9fb4be;padding:10px 0;width:75%;box-sizing:border-box;}/*!sc*/
+tr.expanded .jTsDbk{border-bottom:none;}/*!sc*/
+@media screen and (max-width: 50rem){.jTsDbk{padding:0 20px;border-bottom:none;border-left:1px solid #2be8da;}tr.last>.jTsDbk{border-left:none;}}/*!sc*/
+data-styled.g21[id="sc-fjUQFl"]{content:"jTsDbk,"}/*!sc*/
+.hlsFxq{color:#2be8da;font-family:Courier,monospace;margin-right:10px;}/*!sc*/
+.hlsFxq::before{content:'';display:inline-block;vertical-align:middle;width:10px;height:1px;background:#2be8da;}/*!sc*/
+.hlsFxq::after{content:'';display:inline-block;vertical-align:middle;width:1px;background:#2be8da;height:7px;}/*!sc*/
+data-styled.g22[id="sc-guGTOK"]{content:"hlsFxq,"}/*!sc*/
+.gkzLzl{border-collapse:separate;border-radius:3px;font-size:14px;border-spacing:0;width:100%;}/*!sc*/
+.gkzLzl >tr{vertical-align:middle;}/*!sc*/
+@media screen and (max-width: 50rem){.gkzLzl{display:block;}.gkzLzl >tr,.gkzLzl >tbody>tr{display:block;}}/*!sc*/
+@media screen and (max-width: 50rem) and (-ms-high-contrast:none){.gkzLzl td{float:left;width:100%;}}/*!sc*/
+.gkzLzl .sc-hZARmv,.gkzLzl .sc-hZARmv .sc-hZARmv .sc-hZARmv,.gkzLzl .sc-hZARmv .sc-hZARmv .sc-hZARmv .sc-hZARmv .sc-hZARmv{margin:1em;margin-right:0;background:#fafafa;}/*!sc*/
+.gkzLzl .sc-hZARmv .sc-hZARmv,.gkzLzl .sc-hZARmv .sc-hZARmv .sc-hZARmv .sc-hZARmv,.gkzLzl .sc-hZARmv .sc-hZARmv .sc-hZARmv .sc-hZARmv .sc-hZARmv .sc-hZARmv{background:#ffffff;}/*!sc*/
+data-styled.g24[id="sc-dKKIkQ"]{content:"gkzLzl,"}/*!sc*/
+.ihptAH >ul{list-style:none;padding:0;margin:0;margin:0 -5px;}/*!sc*/
+.ihptAH >ul >li{padding:5px 10px;display:inline-block;background-color:#11171a;border-bottom:1px solid rgba(0, 0, 0, 0.5);cursor:pointer;text-align:center;outline:none;color:#ccc;margin:0 5px 5px 5px;border:1px solid #07090b;border-radius:5px;min-width:60px;font-size:0.9em;font-weight:bold;}/*!sc*/
+.ihptAH >ul >li.react-tabs__tab--selected{color:#333333;background:#ffffff;}/*!sc*/
+.ihptAH >ul >li.react-tabs__tab--selected:focus{outline:auto;}/*!sc*/
+.ihptAH >ul >li:only-child{flex:none;min-width:100px;}/*!sc*/
+.ihptAH >ul >li.tab-success{color:#1d8127;}/*!sc*/
+.ihptAH >ul >li.tab-redirect{color:#ffa500;}/*!sc*/
+.ihptAH >ul >li.tab-info{color:#87ceeb;}/*!sc*/
+.ihptAH >ul >li.tab-error{color:#d41f1c;}/*!sc*/
+.ihptAH >.react-tabs__tab-panel{background:#11171a;}/*!sc*/
+.ihptAH >.react-tabs__tab-panel>div,.ihptAH >.react-tabs__tab-panel>pre{padding:20px;margin:0;}/*!sc*/
+.ihptAH >.react-tabs__tab-panel>div>pre{padding:0;}/*!sc*/
+data-styled.g30[id="sc-brzPDJ"]{content:"ihptAH,"}/*!sc*/
+.gAHTYt code[class*='language-'],.gAHTYt pre[class*='language-']{text-shadow:0 -0.1em 0.2em black;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none;}/*!sc*/
+@media print{.gAHTYt code[class*='language-'],.gAHTYt pre[class*='language-']{text-shadow:none;}}/*!sc*/
+.gAHTYt pre[class*='language-']{padding:1em;margin:0.5em 0;overflow:auto;}/*!sc*/
+.gAHTYt .token.comment,.gAHTYt .token.prolog,.gAHTYt .token.doctype,.gAHTYt .token.cdata{color:hsl(30, 20%, 50%);}/*!sc*/
+.gAHTYt .token.punctuation{opacity:0.7;}/*!sc*/
+.gAHTYt .namespace{opacity:0.7;}/*!sc*/
+.gAHTYt .token.property,.gAHTYt .token.tag,.gAHTYt .token.number,.gAHTYt .token.constant,.gAHTYt .token.symbol{color:#4a8bb3;}/*!sc*/
+.gAHTYt .token.boolean{color:#e64441;}/*!sc*/
+.gAHTYt .token.selector,.gAHTYt .token.attr-name,.gAHTYt .token.string,.gAHTYt .token.char,.gAHTYt .token.builtin,.gAHTYt .token.inserted{color:#a0fbaa;}/*!sc*/
+.gAHTYt .token.selector+a,.gAHTYt .token.attr-name+a,.gAHTYt .token.string+a,.gAHTYt .token.char+a,.gAHTYt .token.builtin+a,.gAHTYt .token.inserted+a,.gAHTYt .token.selector+a:visited,.gAHTYt .token.attr-name+a:visited,.gAHTYt .token.string+a:visited,.gAHTYt .token.char+a:visited,.gAHTYt .token.builtin+a:visited,.gAHTYt .token.inserted+a:visited{color:#4ed2ba;text-decoration:underline;}/*!sc*/
+.gAHTYt .token.property.string{color:white;}/*!sc*/
+.gAHTYt .token.operator,.gAHTYt .token.entity,.gAHTYt .token.url,.gAHTYt .token.variable{color:hsl(40, 90%, 60%);}/*!sc*/
+.gAHTYt .token.atrule,.gAHTYt .token.attr-value,.gAHTYt .token.keyword{color:hsl(350, 40%, 70%);}/*!sc*/
+.gAHTYt .token.regex,.gAHTYt .token.important{color:#e90;}/*!sc*/
+.gAHTYt .token.important,.gAHTYt .token.bold{font-weight:bold;}/*!sc*/
+.gAHTYt .token.italic{font-style:italic;}/*!sc*/
+.gAHTYt .token.entity{cursor:help;}/*!sc*/
+.gAHTYt .token.deleted{color:red;}/*!sc*/
+data-styled.g32[id="sc-dTUlgT"]{content:"gAHTYt,"}/*!sc*/
+.elUMPN{opacity:0.7;transition:opacity 0.3s ease;text-align:right;}/*!sc*/
+.elUMPN:focus-within{opacity:1;}/*!sc*/
+.elUMPN >button{background-color:transparent;border:0;color:inherit;padding:2px 10px;font-family:Roboto,sans-serif;font-size:14px;line-height:1.5em;cursor:pointer;outline:0;}/*!sc*/
+.elUMPN >button :hover,.elUMPN >button :focus{background:rgba(255, 255, 255, 0.1);}/*!sc*/
+data-styled.g33[id="sc-lpbaSe"]{content:"elUMPN,"}/*!sc*/
+.plAcM{position:relative;}/*!sc*/
+data-styled.g37[id="sc-dZEakj"]{content:"plAcM,"}/*!sc*/
+.iKSlPA{margin-left:10px;text-transform:none;font-size:0.929em;color:black;}/*!sc*/
+data-styled.g41[id="sc-dCVDEO"]{content:"iKSlPA,"}/*!sc*/
+.dLipZo{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.dLipZo p:last-child{margin-bottom:0;}/*!sc*/
+.dLipZo h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#00ada1;margin-top:0;}/*!sc*/
+.dLipZo h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.dLipZo code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.dLipZo pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.dLipZo pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.dLipZo pre code:before,.dLipZo pre code:after{content:none;}/*!sc*/
+.dLipZo blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.dLipZo img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.dLipZo ul,.dLipZo ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.dLipZo ul ul,.dLipZo ol ul,.dLipZo ul ol,.dLipZo ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.dLipZo table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.dLipZo table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.dLipZo table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.dLipZo table th,.dLipZo table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.dLipZo table th{text-align:left;font-weight:bold;}/*!sc*/
+.dLipZo .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.dLipZo .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.dLipZo h1:hover>.share-link::before,.dLipZo h2:hover>.share-link::before,.dLipZo .share-link:hover::before{visibility:visible;}/*!sc*/
+.dLipZo a{text-decoration:auto;color:#00ada1;}/*!sc*/
+.dLipZo a:visited{color:#00ada1;}/*!sc*/
+.dLipZo a:hover{color:#14ffef;text-decoration:auto;}/*!sc*/
+.dFbgYC{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.dFbgYC p:last-child{margin-bottom:0;}/*!sc*/
+.dFbgYC p:first-child{margin-top:0;}/*!sc*/
+.dFbgYC p:last-child{margin-bottom:0;}/*!sc*/
+.dFbgYC p{display:inline-block;}/*!sc*/
+.dFbgYC h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#00ada1;margin-top:0;}/*!sc*/
+.dFbgYC h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.dFbgYC code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.dFbgYC pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.dFbgYC pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.dFbgYC pre code:before,.dFbgYC pre code:after{content:none;}/*!sc*/
+.dFbgYC blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.dFbgYC img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.dFbgYC ul,.dFbgYC ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.dFbgYC ul ul,.dFbgYC ol ul,.dFbgYC ul ol,.dFbgYC ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.dFbgYC table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.dFbgYC table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.dFbgYC table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.dFbgYC table th,.dFbgYC table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.dFbgYC table th{text-align:left;font-weight:bold;}/*!sc*/
+.dFbgYC .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.dFbgYC .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.dFbgYC h1:hover>.share-link::before,.dFbgYC h2:hover>.share-link::before,.dFbgYC .share-link:hover::before{visibility:visible;}/*!sc*/
+.dFbgYC a{text-decoration:auto;color:#00ada1;}/*!sc*/
+.dFbgYC a:visited{color:#00ada1;}/*!sc*/
+.dFbgYC a:hover{color:#14ffef;text-decoration:auto;}/*!sc*/
+.dkIbVi{font-family:Roboto,sans-serif;font-weight:400;line-height:1.5em;}/*!sc*/
+.dkIbVi p:last-child{margin-bottom:0;}/*!sc*/
+.dkIbVi p:first-child{margin-top:0;}/*!sc*/
+.dkIbVi p:last-child{margin-bottom:0;}/*!sc*/
+.dkIbVi h1{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.85714em;line-height:1.6em;color:#00ada1;margin-top:0;}/*!sc*/
+.dkIbVi h2{font-family:Montserrat,sans-serif;font-weight:400;font-size:1.57143em;line-height:1.6em;color:#333333;}/*!sc*/
+.dkIbVi code{color:#e53935;background-color:rgba(38, 50, 56, 0.05);font-family:Courier,monospace;border-radius:2px;border:1px solid rgba(38, 50, 56, 0.1);padding:0 5px;font-size:13px;font-weight:400;word-break:break-word;}/*!sc*/
+.dkIbVi pre{font-family:Courier,monospace;white-space:pre;background-color:#11171a;color:white;padding:20px;overflow-x:auto;line-height:normal;border-radius:0;border:1px solid rgba(38, 50, 56, 0.1);}/*!sc*/
+.dkIbVi pre code{background-color:transparent;color:white;padding:0;}/*!sc*/
+.dkIbVi pre code:before,.dkIbVi pre code:after{content:none;}/*!sc*/
+.dkIbVi blockquote{margin:0;margin-bottom:1em;padding:0 15px;color:#777;border-left:4px solid #ddd;}/*!sc*/
+.dkIbVi img{max-width:100%;box-sizing:content-box;}/*!sc*/
+.dkIbVi ul,.dkIbVi ol{padding-left:2em;margin:0;margin-bottom:1em;}/*!sc*/
+.dkIbVi ul ul,.dkIbVi ol ul,.dkIbVi ul ol,.dkIbVi ol ol{margin-bottom:0;margin-top:0;}/*!sc*/
+.dkIbVi table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all;border-collapse:collapse;border-spacing:0;margin-top:1.5em;margin-bottom:1.5em;}/*!sc*/
+.dkIbVi table tr{background-color:#fff;border-top:1px solid #ccc;}/*!sc*/
+.dkIbVi table tr:nth-child(2n){background-color:#fafafa;}/*!sc*/
+.dkIbVi table th,.dkIbVi table td{padding:6px 13px;border:1px solid #ddd;}/*!sc*/
+.dkIbVi table th{text-align:left;font-weight:bold;}/*!sc*/
+.dkIbVi .share-link{cursor:pointer;margin-left:-20px;padding:0;line-height:1;width:20px;display:inline-block;outline:0;}/*!sc*/
+.dkIbVi .share-link:before{content:'';width:15px;height:15px;background-size:contain;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBmaWxsPSIjMDEwMTAxIiBkPSJNNDU5LjcgMjMzLjRsLTkwLjUgOTAuNWMtNTAgNTAtMTMxIDUwLTE4MSAwIC03LjktNy44LTE0LTE2LjctMTkuNC0yNS44bDQyLjEtNDIuMWMyLTIgNC41LTMuMiA2LjgtNC41IDIuOSA5LjkgOCAxOS4zIDE1LjggMjcuMiAyNSAyNSA2NS42IDI0LjkgOTAuNSAwbDkwLjUtOTAuNWMyNS0yNSAyNS02NS42IDAtOTAuNSAtMjQuOS0yNS02NS41LTI1LTkwLjUgMGwtMzIuMiAzMi4yYy0yNi4xLTEwLjItNTQuMi0xMi45LTgxLjYtOC45bDY4LjYtNjguNmM1MC01MCAxMzEtNTAgMTgxIDBDNTA5LjYgMTAyLjMgNTA5LjYgMTgzLjQgNDU5LjcgMjMzLjR6TTIyMC4zIDM4Mi4ybC0zMi4yIDMyLjJjLTI1IDI0LjktNjUuNiAyNC45LTkwLjUgMCAtMjUtMjUtMjUtNjUuNiAwLTkwLjVsOTAuNS05MC41YzI1LTI1IDY1LjUtMjUgOTAuNSAwIDcuOCA3LjggMTIuOSAxNy4yIDE1LjggMjcuMSAyLjQtMS40IDQuOC0yLjUgNi44LTQuNWw0Mi4xLTQyYy01LjQtOS4yLTExLjYtMTgtMTkuNC0yNS44IC01MC01MC0xMzEtNTAtMTgxIDBsLTkwLjUgOTAuNWMtNTAgNTAtNTAgMTMxIDAgMTgxIDUwIDUwIDEzMSA1MCAxODEgMGw2OC42LTY4LjZDMjc0LjYgMzk1LjEgMjQ2LjQgMzkyLjMgMjIwLjMgMzgyLjJ6Ii8+PC9zdmc+Cg==');opacity:0.5;visibility:hidden;display:inline-block;vertical-align:middle;}/*!sc*/
+.dkIbVi h1:hover>.share-link::before,.dkIbVi h2:hover>.share-link::before,.dkIbVi .share-link:hover::before{visibility:visible;}/*!sc*/
+.dkIbVi a{text-decoration:auto;color:#00ada1;}/*!sc*/
+.dkIbVi a:visited{color:#00ada1;}/*!sc*/
+.dkIbVi a:hover{color:#14ffef;text-decoration:auto;}/*!sc*/
+data-styled.g42[id="sc-fhPBcz"]{content:"dLipZo,dFbgYC,dkIbVi,"}/*!sc*/
+.kfJzSr{display:inline;}/*!sc*/
+data-styled.g43[id="sc-dNpohg"]{content:"kfJzSr,"}/*!sc*/
+.jYcDQz{position:relative;}/*!sc*/
+data-styled.g44[id="sc-fsjlER"]{content:"jYcDQz,"}/*!sc*/
+.ihHZyU:hover>.sc-lpbaSe{opacity:1;}/*!sc*/
+data-styled.g49[id="sc-eZbeWy"]{content:"ihHZyU,"}/*!sc*/
+.JZxXP{font-family:Courier,monospace;font-size:13px;white-space:pre;contain:content;overflow-x:auto;}/*!sc*/
+.JZxXP .redoc-json code>.collapser{display:none;pointer-events:none;}/*!sc*/
+.JZxXP .callback-function{color:gray;}/*!sc*/
+.JZxXP .collapser:after{content:'-';cursor:pointer;}/*!sc*/
+.JZxXP .collapsed>.collapser:after{content:'+';cursor:pointer;}/*!sc*/
+.JZxXP .ellipsis:after{content:' … ';}/*!sc*/
+.JZxXP .collapsible{margin-left:2em;}/*!sc*/
+.JZxXP .hoverable{padding-top:1px;padding-bottom:1px;padding-left:2px;padding-right:2px;border-radius:2px;}/*!sc*/
+.JZxXP .hovered{background-color:rgba(235, 238, 249, 1);}/*!sc*/
+.JZxXP .collapser{background-color:transparent;border:0;color:#fff;font-family:Courier,monospace;font-size:13px;padding-right:6px;padding-left:6px;padding-top:0;padding-bottom:0;display:flex;align-items:center;justify-content:center;width:15px;height:15px;position:absolute;top:4px;left:-1.5em;cursor:default;user-select:none;-webkit-user-select:none;padding:2px;}/*!sc*/
+.JZxXP .collapser:focus{outline-color:#fff;outline-style:dotted;outline-width:1px;}/*!sc*/
+.JZxXP ul{list-style-type:none;padding:0px;margin:0px 0px 0px 26px;}/*!sc*/
+.JZxXP li{position:relative;display:block;}/*!sc*/
+.JZxXP .hoverable{display:inline-block;}/*!sc*/
+.JZxXP .selected{outline-style:solid;outline-width:1px;outline-style:dotted;}/*!sc*/
+.JZxXP .collapsed>.collapsible{display:none;}/*!sc*/
+.JZxXP .ellipsis{display:none;}/*!sc*/
+.JZxXP .collapsed>.ellipsis{display:inherit;}/*!sc*/
+data-styled.g50[id="sc-gDVcuj"]{content:"JZxXP,"}/*!sc*/
+.dmqyho{padding:0.9em;background-color:rgba(38,50,56,0.4);margin:0 0 10px 0;display:block;font-family:Montserrat,sans-serif;font-size:0.929em;line-height:1.5em;}/*!sc*/
+data-styled.g51[id="sc-bpuAaX"]{content:"dmqyho,"}/*!sc*/
+.ktNiSp{font-family:Montserrat,sans-serif;font-size:12px;position:absolute;z-index:1;top:-11px;left:12px;font-weight:600;color:rgba(255,255,255,0.7);}/*!sc*/
+data-styled.g52[id="sc-fPyrPm"]{content:"ktNiSp,"}/*!sc*/
+.hMtTVz{position:relative;}/*!sc*/
+data-styled.g53[id="sc-bmCFzp"]{content:"hMtTVz,"}/*!sc*/
+.jPYqSz{margin-top:15px;}/*!sc*/
+data-styled.g56[id="sc-kmqAS"]{content:"jPYqSz,"}/*!sc*/
+.hHoKqR{vertical-align:middle;font-size:13px;line-height:20px;}/*!sc*/
+data-styled.g58[id="sc-huvZk"]{content:"hHoKqR,"}/*!sc*/
+.jolyEu{color:rgba(102,102,102,0.9);}/*!sc*/
+data-styled.g59[id="sc-cLAbsH"]{content:"jolyEu,"}/*!sc*/
+.NHcBj{color:#666;}/*!sc*/
+data-styled.g60[id="sc-hlDTgW"]{content:"NHcBj,"}/*!sc*/
+.eIpQXo{white-space:nowrap;}/*!sc*/
+.eIpQXo:after{content:' or ';white-space:pre;}/*!sc*/
+.eIpQXo:last-child:after,.eIpQXo:only-child:after{content:none;}/*!sc*/
+.eIpQXo a{text-decoration:auto;color:#00ada1;}/*!sc*/
+.eIpQXo a:visited{color:#00ada1;}/*!sc*/
+.eIpQXo a:hover{color:#14ffef;text-decoration:auto;}/*!sc*/
+data-styled.g82[id="sc-jBqEzj"]{content:"eIpQXo,"}/*!sc*/
+.fEyRno{flex:1 1 auto;cursor:pointer;}/*!sc*/
+data-styled.g83[id="sc-igQrDQ"]{content:"fEyRno,"}/*!sc*/
+.bPuOE{width:75%;text-overflow:ellipsis;border-radius:4px;overflow:hidden;}/*!sc*/
+@media screen and (max-width: 50rem){.bPuOE{margin-top:10px;}}/*!sc*/
+data-styled.g84[id="sc-jLKpbB"]{content:"bPuOE,"}/*!sc*/
+.abBws{display:inline-block;margin:0;}/*!sc*/
+data-styled.g85[id="sc-icgweO"]{content:"abBws,"}/*!sc*/
+.hbKehx{width:100%;display:flex;margin:1em 0;flex-direction:row;}/*!sc*/
+@media screen and (max-width: 50rem){.hbKehx{flex-direction:column;}}/*!sc*/
+data-styled.g86[id="sc-jHatCz"]{content:"hbKehx,"}/*!sc*/
+.DDxJV{margin-top:0;margin-bottom:0.5em;}/*!sc*/
+data-styled.g92[id="sc-kiZvlW"]{content:"DDxJV,"}/*!sc*/
+.bmxErA::before{content:'|';display:inline-block;opacity:0.5;width:15px;text-align:center;}/*!sc*/
+.bmxErA:last-child::after{display:none;}/*!sc*/
+data-styled.g94[id="sc-kghAKo"]{content:"bmxErA,"}/*!sc*/
+.gnuaA-d{overflow:hidden;}/*!sc*/
+data-styled.g95[id="sc-fOFsAX"]{content:"gnuaA-d,"}/*!sc*/
+.eXggDo{display:flex;flex-wrap:wrap;margin-left:-15px;}/*!sc*/
+data-styled.g96[id="sc-koJkpm"]{content:"eXggDo,"}/*!sc*/
+.iLTSjM{width:9ex;display:inline-block;height:13px;line-height:13px;background-color:#333;border-radius:3px;background-repeat:no-repeat;background-position:6px 4px;font-size:7px;font-family:Verdana,sans-serif;color:white;text-transform:uppercase;text-align:center;font-weight:bold;vertical-align:middle;margin-right:6px;margin-top:2px;}/*!sc*/
+.iLTSjM.get{background-color:#2F8132;}/*!sc*/
+.iLTSjM.post{background-color:#186FAF;}/*!sc*/
+.iLTSjM.put{background-color:#95507c;}/*!sc*/
+.iLTSjM.options{background-color:#947014;}/*!sc*/
+.iLTSjM.patch{background-color:#bf581d;}/*!sc*/
+.iLTSjM.delete{background-color:#cc3333;}/*!sc*/
+.iLTSjM.basic{background-color:#707070;}/*!sc*/
+.iLTSjM.link{background-color:#07818F;}/*!sc*/
+.iLTSjM.head{background-color:#A23DAD;}/*!sc*/
+.iLTSjM.hook{background-color:#00ada1;}/*!sc*/
+.iLTSjM.schema{background-color:#707070;}/*!sc*/
+data-styled.g100[id="sc-iwCIRy"]{content:"iLTSjM,"}/*!sc*/
+.jyJesI{margin:0;padding:0;}/*!sc*/
+.jyJesI:first-child{padding-bottom:32px;}/*!sc*/
+.sc-kNNXoD .sc-kNNXoD{font-size:0.929em;}/*!sc*/
+.jYWRJV{margin:0;padding:0;display:none;}/*!sc*/
+.jYWRJV:first-child{padding-bottom:32px;}/*!sc*/
+.sc-kNNXoD .sc-kNNXoD{font-size:0.929em;}/*!sc*/
+data-styled.g101[id="sc-kNNXoD"]{content:"jyJesI,jYWRJV,"}/*!sc*/
+.GjPJT{list-style:none inside none;overflow:hidden;text-overflow:ellipsis;padding:0;}/*!sc*/
+data-styled.g102[id="sc-bfkVnW"]{content:"GjPJT,"}/*!sc*/
+.fXAoXr{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Montserrat,sans-serif;font-size:0.929em;text-transform:none;background-color:#fafafa;}/*!sc*/
+.fXAoXr:hover{color:#00ada1;background-color:#e1e1e1;}/*!sc*/
+.fXAoXr .sc-dcKlJK{height:1.5em;width:1.5em;}/*!sc*/
+.fXAoXr .sc-dcKlJK polygon{fill:#333333;}/*!sc*/
+.eYOoH{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;padding-left:40px;display:flex;justify-content:space-between;font-family:Montserrat,sans-serif;background-color:#fafafa;}/*!sc*/
+.eYOoH:hover{color:#00ada1;background-color:#ededed;}/*!sc*/
+.eYOoH .sc-dcKlJK{height:1.5em;width:1.5em;}/*!sc*/
+.eYOoH .sc-dcKlJK polygon{fill:#333333;}/*!sc*/
+.byMHmt{cursor:pointer;color:#333333;margin:0;padding:12.5px 20px;display:flex;justify-content:space-between;font-family:Montserrat,sans-serif;background-color:#fafafa;}/*!sc*/
+.byMHmt:hover{color:#00ada1;background-color:#ededed;}/*!sc*/
+.byMHmt .sc-dcKlJK{height:1.5em;width:1.5em;}/*!sc*/
+.byMHmt .sc-dcKlJK polygon{fill:#333333;}/*!sc*/
+data-styled.g103[id="sc-dSsMvJ"]{content:"fXAoXr,eYOoH,byMHmt,"}/*!sc*/
+.iqJPdR{display:inline-block;vertical-align:middle;width:calc(100% - 38px);overflow:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g104[id="sc-fzltTY"]{content:"iqJPdR,"}/*!sc*/
+.cEaUaF{font-size:0.8em;margin-top:10px;text-align:center;position:fixed;width:260px;bottom:0;background:#fafafa;}/*!sc*/
+.cEaUaF a,.cEaUaF a:visited,.cEaUaF a:hover{color:#333333!important;padding:5px 0;border-top:1px solid #e1e1e1;text-decoration:none;display:flex;align-items:center;justify-content:center;}/*!sc*/
+.cEaUaF img{width:15px;margin-right:5px;}/*!sc*/
+@media screen and (max-width: 50rem){.cEaUaF{width:100%;}}/*!sc*/
+data-styled.g105[id="sc-kHrqIz"]{content:"cEaUaF,"}/*!sc*/
+.bgkhSA{cursor:pointer;position:relative;margin-bottom:5px;}/*!sc*/
+data-styled.g111[id="sc-dYwfDW"]{content:"bgkhSA,"}/*!sc*/
+.hwDgZR{font-family:Courier,monospace;margin-left:10px;flex:1;overflow-x:hidden;text-overflow:ellipsis;}/*!sc*/
+data-styled.g112[id="sc-iuoeev"]{content:"hwDgZR,"}/*!sc*/
+.brWdLq{outline:0;color:inherit;width:100%;text-align:left;cursor:pointer;padding:10px 30px 10px 20px;border-radius:4px 4px 0 0;background-color:#11171a;display:flex;white-space:nowrap;align-items:center;border:1px solid transparent;border-bottom:0;transition:border-color 0.25s ease;}/*!sc*/
+.brWdLq ..sc-iuoeev{color:#ffffff;}/*!sc*/
+.brWdLq:focus{box-shadow:inset 0 2px 2px rgba(0, 0, 0, 0.45),0 2px 0 rgba(128, 128, 128, 0.25);}/*!sc*/
+data-styled.g113[id="sc-lnzCgU"]{content:"brWdLq,"}/*!sc*/
+.kZNoUr{font-size:0.929em;line-height:20px;background-color:#2F8132;color:#ffffff;padding:3px 10px;text-transform:uppercase;font-family:Montserrat,sans-serif;margin:0;}/*!sc*/
+.dRhDQt{font-size:0.929em;line-height:20px;background-color:#186FAF;color:#ffffff;padding:3px 10px;text-transform:uppercase;font-family:Montserrat,sans-serif;margin:0;}/*!sc*/
+.lcygMq{font-size:0.929em;line-height:20px;background-color:#95507c;color:#ffffff;padding:3px 10px;text-transform:uppercase;font-family:Montserrat,sans-serif;margin:0;}/*!sc*/
+data-styled.g114[id="sc-etVRix"]{content:"kZNoUr,dRhDQt,lcygMq,"}/*!sc*/
+.gTtGYM{position:absolute;width:100%;z-index:100;background:#fafafa;color:#263238;box-sizing:border-box;box-shadow:0 0 6px rgba(0, 0, 0, 0.33);overflow:hidden;border-bottom-left-radius:4px;border-bottom-right-radius:4px;transition:all 0.25s ease;visibility:hidden;transform:translateY(-50%) scaleY(0);}/*!sc*/
+data-styled.g115[id="sc-dRZyXS"]{content:"gTtGYM,"}/*!sc*/
+.iajdpk{padding:10px;}/*!sc*/
+data-styled.g116[id="sc-inRxyr"]{content:"iajdpk,"}/*!sc*/
+.kAcxZy{padding:5px;border:1px solid #ccc;background:#fff;word-break:break-all;color:#00ada1;}/*!sc*/
+.kAcxZy >span{color:#333333;}/*!sc*/
+data-styled.g117[id="sc-lhcVAQ"]{content:"kAcxZy,"}/*!sc*/
+.jeFRwJ{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#1d8127;background-color:rgba(29,129,39,0.07);}/*!sc*/
+.jeFRwJ:focus{outline:auto #1d8127;}/*!sc*/
+.fJrWIH{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#d41f1c;background-color:rgba(212,31,28,0.07);}/*!sc*/
+.fJrWIH:focus{outline:auto #d41f1c;}/*!sc*/
+.dwQYyf{display:block;border:0;width:100%;text-align:left;padding:10px;border-radius:2px;margin-bottom:4px;line-height:1.5em;cursor:pointer;color:#1d8127;background-color:rgba(29,129,39,0.07);cursor:default;}/*!sc*/
+.dwQYyf:focus{outline:auto #1d8127;}/*!sc*/
+.dwQYyf::before{content:"—";font-weight:bold;width:1.5em;text-align:center;display:inline-block;vertical-align:top;}/*!sc*/
+.dwQYyf:focus{outline:0;}/*!sc*/
+data-styled.g120[id="sc-koGwOT"]{content:"jeFRwJ,fJrWIH,dwQYyf,"}/*!sc*/
+.ljgvjV{vertical-align:top;}/*!sc*/
+data-styled.g123[id="sc-dHZbTr"]{content:"ljgvjV,"}/*!sc*/
+.dsRSAK{font-size:1.3em;padding:0.2em 0;margin:3em 0 1.1em;color:#333333;font-weight:normal;}/*!sc*/
+data-styled.g124[id="sc-fCdovG"]{content:"dsRSAK,"}/*!sc*/
+.kPKKPE{margin-bottom:30px;}/*!sc*/
+data-styled.g129[id="sc-bpSLYx"]{content:"kPKKPE,"}/*!sc*/
+.XgOeQ{user-select:none;width:20px;height:20px;align-self:center;display:flex;flex-direction:column;color:#00ada1;}/*!sc*/
+data-styled.g130[id="sc-djWYAM"]{content:"XgOeQ,"}/*!sc*/
+.kvyhOU{width:260px;background-color:#fafafa;overflow:hidden;display:flex;flex-direction:column;backface-visibility:hidden;height:100vh;position:sticky;position:-webkit-sticky;top:0;}/*!sc*/
+@media screen and (max-width: 50rem){.kvyhOU{position:fixed;z-index:20;width:100%;background:#fafafa;display:none;}}/*!sc*/
+@media print{.kvyhOU{display:none;}}/*!sc*/
+data-styled.g131[id="sc-dVElco"]{content:"kvyhOU,"}/*!sc*/
+.doXGFW{outline:none;user-select:none;background-color:#f2f2f2;color:#00ada1;display:none;cursor:pointer;position:fixed;right:20px;z-index:100;border-radius:50%;box-shadow:0 0 20px rgba(0, 0, 0, 0.3);bottom:44px;width:60px;height:60px;padding:0 20px;}/*!sc*/
+@media screen and (max-width: 50rem){.doXGFW{display:flex;}}/*!sc*/
+.doXGFW svg{color:#0065FB;}/*!sc*/
+@media print{.doXGFW{display:none;}}/*!sc*/
+data-styled.g132[id="sc-irwjCN"]{content:"doXGFW,"}/*!sc*/
+.cJUmVI{font-family:Roboto,sans-serif;font-size:14px;font-weight:400;line-height:1.5em;color:#333333;display:flex;position:relative;text-align:left;-webkit-font-smoothing:antialiased;font-smoothing:antialiased;text-rendering:optimizeSpeed!important;tap-highlight-color:rgba(0, 0, 0, 0);text-size-adjust:100%;}/*!sc*/
+.cJUmVI *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(255, 255, 255, 0);}/*!sc*/
+data-styled.g133[id="sc-ldfREC"]{content:"cJUmVI,"}/*!sc*/
+.eDQhjF{z-index:1;position:relative;overflow:hidden;width:calc(100% - 260px);contain:layout;}/*!sc*/
+@media print,screen and (max-width: 50rem){.eDQhjF{width:100%;}}/*!sc*/
+data-styled.g134[id="sc-ejCgGf"]{content:"eDQhjF,"}/*!sc*/
+.cCFEoS{background:#263238;position:absolute;top:0;bottom:0;right:0;width:calc((100% - 260px) * 0.4);}/*!sc*/
+@media print,screen and (max-width: 75rem){.cCFEoS{display:none;}}/*!sc*/
+data-styled.g135[id="sc-dPhEwk"]{content:"cCFEoS,"}/*!sc*/
+.hnCKSs{padding:5px 0;}/*!sc*/
+data-styled.g136[id="sc-ikZCWJ"]{content:"hnCKSs,"}/*!sc*/
+.erbREP{width:calc(100% - 40px);box-sizing:border-box;margin:0 20px;padding:5px 10px 5px 20px;border:0;border-bottom:1px solid #e1e1e1;font-family:Roboto,sans-serif;font-weight:bold;font-size:13px;color:#333333;background-color:transparent;outline:none;}/*!sc*/
+data-styled.g137[id="sc-kWJkYy"]{content:"erbREP,"}/*!sc*/
+.jutLom{position:absolute;left:20px;height:1.8em;width:0.9em;}/*!sc*/
+.jutLom path{fill:#333333;}/*!sc*/
+data-styled.g138[id="sc-edfAab"]{content:"jutLom,"}/*!sc*/
+</style>
+  </head>
+  <body>
+    
+      <div id="redoc"><div class="sc-ldfREC cJUmVI redoc-wrap"><div class="sc-dVElco kvyhOU menu-content" style="top:0px;height:calc(100vh - 0px)"><div role="search" class="sc-ikZCWJ hnCKSs"><svg class="sc-edfAab jutLom search-icon" version="1.1" viewBox="0 0 1000 1000" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px"><path d="M968.2,849.4L667.3,549c83.9-136.5,66.7-317.4-51.7-435.6C477.1-25,252.5-25,113.9,113.4c-138.5,138.3-138.5,362.6,0,501C219.2,730.1,413.2,743,547.6,666.5l301.9,301.4c43.6,43.6,76.9,14.9,104.2-12.4C981,928.3,1011.8,893,968.2,849.4z M524.5,522c-88.9,88.7-233,88.7-321.8,0c-88.9-88.7-88.9-232.6,0-321.3c88.9-88.7,233-88.7,321.8,0C613.4,289.4,613.4,433.3,524.5,522z"></path></svg><input placeholder="Search..." aria-label="Search" type="text" class="sc-kWJkYy erbREP search-input" value=""/></div><div class="sc-dZEakj plAcM scrollbar-container undefined"><ul role="menu" class="sc-kNNXoD jyJesI"><li tabindex="0" depth="1" data-item-id="section/Introduction" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ fXAoXr -depth1"><span width="calc(100% - 38px)" title="Introduction" class="sc-fzltTY iqJPdR">Introduction</span><svg class="sc-dcKlJK enjdhx" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-kNNXoD jYWRJV"><li tabindex="0" depth="2" data-item-id="section/Introduction/Architecture" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ eYOoH -depth2"><span width="calc(100% - 38px)" title="Architecture" class="sc-fzltTY iqJPdR">Architecture</span></label></li><li tabindex="0" depth="2" data-item-id="section/Introduction/Metrics" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ eYOoH -depth2"><span width="calc(100% - 38px)" title="Metrics" class="sc-fzltTY iqJPdR">Metrics</span></label></li><li tabindex="0" depth="2" data-item-id="section/Introduction/Technology-Choices" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ eYOoH -depth2"><span width="calc(100% - 38px)" title="Technology Choices" class="sc-fzltTY iqJPdR">Technology Choices</span></label></li></ul></li><li tabindex="0" depth="1" data-item-id="tag/General" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ fXAoXr -depth1"><span width="calc(100% - 38px)" title="General" class="sc-fzltTY iqJPdR">General</span><svg class="sc-dcKlJK enjdhx" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-kNNXoD jYWRJV"><li tabindex="0" depth="2" data-item-id="tag/General/operation/ping" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ byMHmt -depth2"><span type="get" class="sc-iwCIRy iLTSjM operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fzltTY iqJPdR">Ping</span></label></li></ul></li><li tabindex="0" depth="1" data-item-id="tag/Metrics" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ fXAoXr -depth1"><span width="calc(100% - 38px)" title="Metrics" class="sc-fzltTY iqJPdR">Metrics</span><svg class="sc-dcKlJK enjdhx" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-kNNXoD jYWRJV"><li tabindex="0" depth="2" data-item-id="tag/Metrics/operation/count" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ byMHmt -depth2"><span type="post" class="sc-iwCIRy iLTSjM operation-type post">post</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fzltTY iqJPdR">Count</span></label></li><li tabindex="0" depth="2" data-item-id="tag/Metrics/operation/up" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ byMHmt -depth2"><span type="post" class="sc-iwCIRy iLTSjM operation-type post">post</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fzltTY iqJPdR">Up</span></label></li><li tabindex="0" depth="2" data-item-id="tag/Metrics/operation/down" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ byMHmt -depth2"><span type="post" class="sc-iwCIRy iLTSjM operation-type post">post</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fzltTY iqJPdR">Down</span></label></li><li tabindex="0" depth="2" data-item-id="tag/Metrics/operation/load" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ byMHmt -depth2"><span type="put" class="sc-iwCIRy iLTSjM operation-type put">put</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fzltTY iqJPdR">Load</span></label></li></ul></li><li tabindex="0" depth="1" data-item-id="tag/Traces" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ fXAoXr -depth1"><span width="calc(100% - 38px)" title="Traces" class="sc-fzltTY iqJPdR">Traces</span><svg class="sc-dcKlJK enjdhx" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-kNNXoD jYWRJV"><li tabindex="0" depth="2" data-item-id="tag/Traces/operation/delay" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ byMHmt -depth2"><span type="get" class="sc-iwCIRy iLTSjM operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fzltTY iqJPdR">Delay</span></label></li><li tabindex="0" depth="2" data-item-id="tag/Traces/operation/event" role="menuitem" class="sc-bfkVnW GjPJT"><label class="sc-dSsMvJ byMHmt -depth2"><span type="get" class="sc-iwCIRy iLTSjM operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-fzltTY iqJPdR">Event</span></label></li></ul></li></ul><div class="sc-kHrqIz cEaUaF"><a target="_blank" rel="noopener noreferrer" href="https://redocly.com/redoc/">API docs by Redocly</a></div></div></div><div class="sc-irwjCN doXGFW"><div class="sc-djWYAM XgOeQ"><svg class="" style="transform:translate(2px, -4px) rotate(180deg);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg><svg class="" style="transform:translate(2px, 4px);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
+          m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
+          -55.627 c 30.5891,-30.59485 56.1806,-55.627 56.8701,-55.627 0.6894,
+          0 79.8637,78.60862 175.9427,174.68583 l 174.6892,174.6858 174.6892,
+          -174.6858 c 96.079,-96.07721 175.253196,-174.68583 175.942696,
+          -174.68583 0.6895,0 26.281,25.03215 56.8701,
+          55.627 l 55.6165,55.627 -231.245496,231.24803 c -127.185,127.1864
+          -231.5279,231.248 -231.873,231.248 -0.3451,0 -104.688,
+          -104.0616 -231.873,-231.248 z
+        " fill="currentColor"></path></g></svg></div></div><div class="sc-ejCgGf eDQhjF api-content"><div class="sc-dIMoHT bTqehu"><div class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX api-info"><h1 class="sc-icnseD sc-kiZvlW Xavsg DDxJV">PHP OpenTelemetry Test Application<!-- --> <span>(<!-- -->1.0.0<!-- -->)</span></h1><p>Download OpenAPI specification<!-- -->:</p><div class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"><div class="sc-fOFsAX gnuaA-d"><div class="sc-koJkpm eXggDo"><span class="sc-kghAKo bmxErA">E-mail<!-- -->:<!-- --> <a href="mailto:jess@mintopia.net">jess@mintopia.net</a></span> <!-- --> <span class="sc-kghAKo bmxErA">License:<!-- --> <a href="https://opensource.org/license/mit/">MIT</a></span> </div></div></div><div data-role="redoc-summary" html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"></div><div data-role="redoc-description" html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"></div></div></div></div><div id="section/Introduction" data-section-id="section/Introduction" class="sc-dIMoHT bTqehu"><div class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#section/Introduction" aria-label="section/Introduction"></a>Introduction</h2></div></div><div class="sc-fWnslK tJLWz"><div class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo redoc-markdown " html="&lt;p&gt;This PHP application is designed to be an example of using OpenTelemetry inside an application to export metrics, logs
+and traces to any OpenTelemetry compatible provider.&lt;/p&gt;
+&lt;p&gt;Open Telemetry is a vendor-neutral CNCF project for standardised observability. It is widely supported by all
+observability providers.&lt;/p&gt;
+&lt;p&gt;Source code for this can be found at &lt;a href=&quot;https://github.com/mintopia/php-opentelemetry-example&quot;&gt;https://github.com/mintopia/php-opentelemetry-example&lt;/a&gt;.&lt;/p&gt;
+"><p>This PHP application is designed to be an example of using OpenTelemetry inside an application to export metrics, logs
+and traces to any OpenTelemetry compatible provider.</p>
+<p>Open Telemetry is a vendor-neutral CNCF project for standardised observability. It is widely supported by all
+observability providers.</p>
+<p>Source code for this can be found at <a href="https://github.com/mintopia/php-opentelemetry-example">https://github.com/mintopia/php-opentelemetry-example</a>.</p>
+</div></div></div><div id="section/Introduction/Architecture" data-section-id="section/Introduction/Architecture" class="sc-dIMoHT bTqehu"><div class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-cXawGu HmsNH"><a class="sc-jScdur jRyfmD" href="#section/Introduction/Architecture" aria-label="section/Introduction/Architecture"></a>Architecture</h2></div></div><div class="sc-fWnslK tJLWz"><div class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo redoc-markdown " html="&lt;p&gt;The main application is a Laravel 12 application running in a docker container using FrankenPHP. There is a scheduler
+container running a task that exports metrics every minute. The metrics themselves are stored in a redis compatible
+cache, eg. Redis, ElastiCache, Valkey.&lt;/p&gt;
+&lt;p&gt;An Open Telemetry Collector container is running as a sidecar and takes the metrics and pushes them based on the
+configuration in &lt;code&gt;otel-collector-config.yaml&lt;/code&gt; in the root. This is using the
+&lt;a href=&quot;https://github.com/aws-observability/aws-otel-collector&quot;&gt;AWS Open Telemetry Collector&lt;/a&gt;
+as it allows easy submission of data to CloudWatch and X-Ray. The supplied configuration also has an example of sending
+data to &lt;a href=&quot;https://www.honeycomb.io/&quot;&gt;Honeycomb&lt;/a&gt;.&lt;/p&gt;
+"><p>The main application is a Laravel 12 application running in a docker container using FrankenPHP. There is a scheduler
+container running a task that exports metrics every minute. The metrics themselves are stored in a redis compatible
+cache, eg. Redis, ElastiCache, Valkey.</p>
+<p>An Open Telemetry Collector container is running as a sidecar and takes the metrics and pushes them based on the
+configuration in <code>otel-collector-config.yaml</code> in the root. This is using the
+<a href="https://github.com/aws-observability/aws-otel-collector">AWS Open Telemetry Collector</a>
+as it allows easy submission of data to CloudWatch and X-Ray. The supplied configuration also has an example of sending
+data to <a href="https://www.honeycomb.io/">Honeycomb</a>.</p>
+</div></div></div><div id="section/Introduction/Metrics" data-section-id="section/Introduction/Metrics" class="sc-dIMoHT bTqehu"><div class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-cXawGu HmsNH"><a class="sc-jScdur jRyfmD" href="#section/Introduction/Metrics" aria-label="section/Introduction/Metrics"></a>Metrics</h2></div></div><div class="sc-fWnslK tJLWz"><div class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo redoc-markdown " html="&lt;p&gt;There are 3 metrics we export every minute.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;widget-count&lt;/code&gt; - An Open Telemetry Counter. This can only go up and is incremented using the &lt;code&gt;/count&lt;/code&gt; endpoint.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;widget-number&lt;/code&gt; - An Open Telemetry Up Down Counter. This can be increased and decreased using the &lt;code&gt;/up&lt;/code&gt; and &lt;code&gt;/down&lt;/code&gt; endpoints.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;load&lt;/code&gt; - An Open Telemetry Gauge. This can be set using the &lt;code&gt;/load&lt;/code&gt; endpoint. It is intended to be used to simulate load on the application and to be used for autoscaling decisions.&lt;/li&gt;
+&lt;/ul&gt;
+"><p>There are 3 metrics we export every minute.</p>
+<ul>
+<li><code>widget-count</code> - An Open Telemetry Counter. This can only go up and is incremented using the <code>/count</code> endpoint.</li>
+<li><code>widget-number</code> - An Open Telemetry Up Down Counter. This can be increased and decreased using the <code>/up</code> and <code>/down</code> endpoints.</li>
+<li><code>load</code> - An Open Telemetry Gauge. This can be set using the <code>/load</code> endpoint. It is intended to be used to simulate load on the application and to be used for autoscaling decisions.</li>
+</ul>
+</div></div></div><div id="section/Introduction/Technology-Choices" data-section-id="section/Introduction/Technology-Choices" class="sc-dIMoHT bTqehu"><div class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-cXawGu HmsNH"><a class="sc-jScdur jRyfmD" href="#section/Introduction/Technology-Choices" aria-label="section/Introduction/Technology-Choices"></a>Technology Choices</h2></div></div><div class="sc-fWnslK tJLWz"><div class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo redoc-markdown " html="&lt;p&gt;Laravel 12 was used as an easy to implement and understandable PHP framework for this. The Open Telemetry integration is
+custom written using the Open Telemetry SDK. I considered using the
+&lt;a href=&quot;https://spatie.be/docs/laravel-open-telemetry/v1/introduction&quot;&gt;Spatie Laravel Open Telemetry&lt;/a&gt; library, but found that
+it wasn&amp;#39;t outputting OTLP HTTP JSON formatted requests to the OpenTelemetry collector.&lt;/p&gt;
+&lt;p&gt;Laravel Octane and FrankenPHP are used for running the application. This would allow for high performance in production
+environments.&lt;/p&gt;
+&lt;p&gt;PHPStan and PHP Code Beautifier and Fixer is used to ensure code quality and adherence to standards.&lt;/p&gt;
+&lt;p&gt;API documentation is written as an OpenAPI specification, bundled and generated by Redocly.&lt;/p&gt;
+"><p>Laravel 12 was used as an easy to implement and understandable PHP framework for this. The Open Telemetry integration is
+custom written using the Open Telemetry SDK. I considered using the
+<a href="https://spatie.be/docs/laravel-open-telemetry/v1/introduction">Spatie Laravel Open Telemetry</a> library, but found that
+it wasn&#39;t outputting OTLP HTTP JSON formatted requests to the OpenTelemetry collector.</p>
+<p>Laravel Octane and FrankenPHP are used for running the application. This would allow for high performance in production
+environments.</p>
+<p>PHPStan and PHP Code Beautifier and Fixer is used to ensure code quality and adherence to standards.</p>
+<p>API documentation is written as an OpenAPI specification, bundled and generated by Redocly.</p>
+</div></div></div><div id="tag/General" data-section-id="tag/General" class="sc-dIMoHT bTqehu"><div class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/General" aria-label="tag/General"></a>General</h2></div></div><div class="sc-fWnslK tJLWz"><div class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo redoc-markdown " html="&lt;p&gt;Endpoints that don&amp;#39;t belong in other categories.&lt;/p&gt;
+"><p>Endpoints that don&#39;t belong in other categories.</p>
+</div></div></div><div id="tag/General/operation/ping" data-section-id="tag/General/operation/ping" class="sc-dIMoHT ftfFlx"><div data-section-id="operation/ping" id="operation/ping" class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/General/operation/ping" aria-label="tag/General/operation/ping"></a>Ping<!-- --> </h2><div class="sc-bpSLYx kPKKPE"><div html="&lt;p&gt;Returns basic information about the API and the current user. This will include your IP address, the API timestamp and the version.&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"><p>Returns basic information about the API and the current user. This will include your IP address, the API timestamp and the version.</p>
+</div></div><div class="sc-jHatCz hbKehx"><div class="sc-igQrDQ fEyRno"><h5 class="sc-cUiCeM sc-icgweO crXcll abBws">Authorizations:</h5><svg class="sc-dcKlJK jvLsrI" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jLKpbB bPuOE"><span class="sc-jBqEzj eIpQXo">None</span></div></div><div><h3 class="sc-fCdovG dsRSAK">Responses</h3><div><button class="sc-koGwOT jeFRwJ"><svg class="sc-dcKlJK bKFTgj" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-dHZbTr ljgvjV">200<!-- --> </strong><div html="&lt;p&gt;API Ping Response&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz sc-dNpohg gAHTYt dFbgYC kfJzSr"><p>API Ping Response</p>
+</div></button></div></div></div><div class="sc-iQQCXo sc-gDpztx rcGrS ijAuiF"><div class="sc-dYwfDW bgkhSA"><button class="sc-lnzCgU brWdLq"><span type="get" class="sc-etVRix kZNoUr http-verb get">get</span><span class="sc-iuoeev hwDgZR">/ping</span><svg class="sc-dcKlJK hopFSn" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dRZyXS gTtGYM"><div class="sc-inRxyr iajdpk"><div html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dkIbVi"></div><div tabindex="0" role="button"><div class="sc-lhcVAQ kAcxZy"><span>https://opentelemetry/api/v1</span>/ping</div></div></div></div></div><div><h3 class="sc-jJAtPt esvUOo"> <!-- -->Response samples<!-- --> </h3><div class="sc-brzPDJ ihptAH" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab«R9ppa»0" aria-selected="true" aria-disabled="false" aria-controls="panel«R9ppa»0" tabindex="0" data-rttab="true">200</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel«R9ppa»0" aria-labelledby="tab«R9ppa»0"><div><div class="sc-bmCFzp hMtTVz"><span class="sc-fPyrPm ktNiSp">Content type</span><div class="sc-bpuAaX dmqyho">application/json</div></div><div class="sc-kmqAS jPYqSz"><div class="sc-eZbeWy ihHZyU"><div class="sc-lpbaSe elUMPN"><button><div class="sc-fsjlER jYcDQz">Copy</div></button></div><div class="sc-dTUlgT gAHTYt sc-gDVcuj JZxXP"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"timestamp"</span>: <span class="token string">&quot;2023-10-03T14:41:31+00:00&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"version"</span>: <span class="token string">&quot;1.0.0&quot;</span><span class="token punctuation">,</span></div></li><li><div class="hoverable "><span class="property token string">"ip"</span>: <span class="token string">&quot;127.0.0.1&quot;</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div></div></div></div><div id="tag/Metrics" data-section-id="tag/Metrics" class="sc-dIMoHT bTqehu"><div class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/Metrics" aria-label="tag/Metrics"></a>Metrics</h2></div></div><div class="sc-fWnslK tJLWz"><div class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo redoc-markdown " html="&lt;p&gt;Endpoints relating to metrics.&lt;/p&gt;
+"><p>Endpoints relating to metrics.</p>
+</div></div></div><div id="tag/Metrics/operation/count" data-section-id="tag/Metrics/operation/count" class="sc-dIMoHT ftfFlx"><div data-section-id="operation/count" id="operation/count" class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/Metrics/operation/count" aria-label="tag/Metrics/operation/count"></a>Count<!-- --> </h2><div class="sc-bpSLYx kPKKPE"><div html="&lt;p&gt;Increases the &lt;code&gt;widget-count&lt;/code&gt; metric by 1&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"><p>Increases the <code>widget-count</code> metric by 1</p>
+</div></div><div class="sc-jHatCz hbKehx"><div class="sc-igQrDQ fEyRno"><h5 class="sc-cUiCeM sc-icgweO crXcll abBws">Authorizations:</h5><svg class="sc-dcKlJK jvLsrI" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jLKpbB bPuOE"><span class="sc-jBqEzj eIpQXo">None</span></div></div><div><h3 class="sc-fCdovG dsRSAK">Responses</h3><div><button class="sc-koGwOT jeFRwJ"><svg class="sc-dcKlJK bKFTgj" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-dHZbTr ljgvjV">200<!-- --> </strong><div html="&lt;p&gt;Metric Updated&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz sc-dNpohg gAHTYt dFbgYC kfJzSr"><p>Metric Updated</p>
+</div></button></div></div></div><div class="sc-iQQCXo sc-gDpztx rcGrS ijAuiF"><div class="sc-dYwfDW bgkhSA"><button class="sc-lnzCgU brWdLq"><span type="post" class="sc-etVRix dRhDQt http-verb post">post</span><span class="sc-iuoeev hwDgZR">/count</span><svg class="sc-dcKlJK hopFSn" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dRZyXS gTtGYM"><div class="sc-inRxyr iajdpk"><div html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dkIbVi"></div><div tabindex="0" role="button"><div class="sc-lhcVAQ kAcxZy"><span>https://opentelemetry/api/v1</span>/count</div></div></div></div></div><div><h3 class="sc-jJAtPt esvUOo"> <!-- -->Response samples<!-- --> </h3><div class="sc-brzPDJ ihptAH" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab«R174pq»0" aria-selected="true" aria-disabled="false" aria-controls="panel«R174pq»0" tabindex="0" data-rttab="true">200</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel«R174pq»0" aria-labelledby="tab«R174pq»0"><div><div class="sc-bmCFzp hMtTVz"><span class="sc-fPyrPm ktNiSp">Content type</span><div class="sc-bpuAaX dmqyho">application/json</div></div><div class="sc-kmqAS jPYqSz"><div class="sc-eZbeWy ihHZyU"><div class="sc-lpbaSe elUMPN"><button><div class="sc-fsjlER jYcDQz">Copy</div></button></div><div class="sc-dTUlgT gAHTYt sc-gDVcuj JZxXP"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"value"</span>: <span class="token number">42</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div></div></div></div><div id="tag/Metrics/operation/up" data-section-id="tag/Metrics/operation/up" class="sc-dIMoHT ftfFlx"><div data-section-id="operation/up" id="operation/up" class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/Metrics/operation/up" aria-label="tag/Metrics/operation/up"></a>Up<!-- --> </h2><div class="sc-bpSLYx kPKKPE"><div html="&lt;p&gt;Increases the &lt;code&gt;widget-numbers&lt;/code&gt; metric by 1&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"><p>Increases the <code>widget-numbers</code> metric by 1</p>
+</div></div><div class="sc-jHatCz hbKehx"><div class="sc-igQrDQ fEyRno"><h5 class="sc-cUiCeM sc-icgweO crXcll abBws">Authorizations:</h5><svg class="sc-dcKlJK jvLsrI" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jLKpbB bPuOE"><span class="sc-jBqEzj eIpQXo">None</span></div></div><div><h3 class="sc-fCdovG dsRSAK">Responses</h3><div><button class="sc-koGwOT jeFRwJ"><svg class="sc-dcKlJK bKFTgj" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-dHZbTr ljgvjV">200<!-- --> </strong><div html="&lt;p&gt;Metric Updated&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz sc-dNpohg gAHTYt dFbgYC kfJzSr"><p>Metric Updated</p>
+</div></button></div></div></div><div class="sc-iQQCXo sc-gDpztx rcGrS ijAuiF"><div class="sc-dYwfDW bgkhSA"><button class="sc-lnzCgU brWdLq"><span type="post" class="sc-etVRix dRhDQt http-verb post">post</span><span class="sc-iuoeev hwDgZR">/up</span><svg class="sc-dcKlJK hopFSn" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dRZyXS gTtGYM"><div class="sc-inRxyr iajdpk"><div html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dkIbVi"></div><div tabindex="0" role="button"><div class="sc-lhcVAQ kAcxZy"><span>https://opentelemetry/api/v1</span>/up</div></div></div></div></div><div><h3 class="sc-jJAtPt esvUOo"> <!-- -->Response samples<!-- --> </h3><div class="sc-brzPDJ ihptAH" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab«R1759q»0" aria-selected="true" aria-disabled="false" aria-controls="panel«R1759q»0" tabindex="0" data-rttab="true">200</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel«R1759q»0" aria-labelledby="tab«R1759q»0"><div><div class="sc-bmCFzp hMtTVz"><span class="sc-fPyrPm ktNiSp">Content type</span><div class="sc-bpuAaX dmqyho">application/json</div></div><div class="sc-kmqAS jPYqSz"><div class="sc-eZbeWy ihHZyU"><div class="sc-lpbaSe elUMPN"><button><div class="sc-fsjlER jYcDQz">Copy</div></button></div><div class="sc-dTUlgT gAHTYt sc-gDVcuj JZxXP"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"value"</span>: <span class="token number">42</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div></div></div></div><div id="tag/Metrics/operation/down" data-section-id="tag/Metrics/operation/down" class="sc-dIMoHT ftfFlx"><div data-section-id="operation/down" id="operation/down" class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/Metrics/operation/down" aria-label="tag/Metrics/operation/down"></a>Down<!-- --> </h2><div class="sc-bpSLYx kPKKPE"><div html="&lt;p&gt;Decreases the &lt;code&gt;widget-numbers&lt;/code&gt; metric by 1&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"><p>Decreases the <code>widget-numbers</code> metric by 1</p>
+</div></div><div class="sc-jHatCz hbKehx"><div class="sc-igQrDQ fEyRno"><h5 class="sc-cUiCeM sc-icgweO crXcll abBws">Authorizations:</h5><svg class="sc-dcKlJK jvLsrI" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jLKpbB bPuOE"><span class="sc-jBqEzj eIpQXo">None</span></div></div><div><h3 class="sc-fCdovG dsRSAK">Responses</h3><div><button class="sc-koGwOT jeFRwJ"><svg class="sc-dcKlJK bKFTgj" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-dHZbTr ljgvjV">200<!-- --> </strong><div html="&lt;p&gt;Metric Updated&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz sc-dNpohg gAHTYt dFbgYC kfJzSr"><p>Metric Updated</p>
+</div></button></div></div></div><div class="sc-iQQCXo sc-gDpztx rcGrS ijAuiF"><div class="sc-dYwfDW bgkhSA"><button class="sc-lnzCgU brWdLq"><span type="post" class="sc-etVRix dRhDQt http-verb post">post</span><span class="sc-iuoeev hwDgZR">/down</span><svg class="sc-dcKlJK hopFSn" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dRZyXS gTtGYM"><div class="sc-inRxyr iajdpk"><div html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dkIbVi"></div><div tabindex="0" role="button"><div class="sc-lhcVAQ kAcxZy"><span>https://opentelemetry/api/v1</span>/down</div></div></div></div></div><div><h3 class="sc-jJAtPt esvUOo"> <!-- -->Response samples<!-- --> </h3><div class="sc-brzPDJ ihptAH" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab«R175pq»0" aria-selected="true" aria-disabled="false" aria-controls="panel«R175pq»0" tabindex="0" data-rttab="true">200</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel«R175pq»0" aria-labelledby="tab«R175pq»0"><div><div class="sc-bmCFzp hMtTVz"><span class="sc-fPyrPm ktNiSp">Content type</span><div class="sc-bpuAaX dmqyho">application/json</div></div><div class="sc-kmqAS jPYqSz"><div class="sc-eZbeWy ihHZyU"><div class="sc-lpbaSe elUMPN"><button><div class="sc-fsjlER jYcDQz">Copy</div></button></div><div class="sc-dTUlgT gAHTYt sc-gDVcuj JZxXP"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"value"</span>: <span class="token number">42</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div></div></div></div><div id="tag/Metrics/operation/load" data-section-id="tag/Metrics/operation/load" class="sc-dIMoHT ftfFlx"><div data-section-id="operation/load" id="operation/load" class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/Metrics/operation/load" aria-label="tag/Metrics/operation/load"></a>Load<!-- --> </h2><div class="sc-bpSLYx kPKKPE"><div html="&lt;p&gt;Sets the &lt;code&gt;load&lt;/code&gt; metric to a specific value between 1 and 100.&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"><p>Sets the <code>load</code> metric to a specific value between 1 and 100.</p>
+</div></div><div class="sc-jHatCz hbKehx"><div class="sc-igQrDQ fEyRno"><h5 class="sc-cUiCeM sc-icgweO crXcll abBws">Authorizations:</h5><svg class="sc-dcKlJK jvLsrI" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jLKpbB bPuOE"><span class="sc-jBqEzj eIpQXo">None</span></div></div><h5 class="sc-cUiCeM crXcll">Request Body schema: <span class="sc-dCVDEO iKSlPA">application/json</span></h5><div html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"></div><table class="sc-dKKIkQ gkzLzl"><tbody><tr class="last "><td kind="field" title="load" class="sc-lixPIL sc-dFaThA krjGtn txOzo"><span class="sc-guGTOK hlsFxq"></span><span class="property-name">load</span></td><td class="sc-fjUQFl jTsDbk"><div><div><span class="sc-huvZk sc-cLAbsH hHoKqR jolyEu"></span><span class="sc-huvZk sc-hlDTgW hHoKqR NHcBj">integer</span></div> <div><div html="&lt;p&gt;The value to set the load metric to. This must be between 1 and 100.&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz gAHTYt dkIbVi"><p>The value to set the load metric to. This must be between 1 and 100.</p>
+</div></div></div></td></tr></tbody></table><div><h3 class="sc-fCdovG dsRSAK">Responses</h3><div><button class="sc-koGwOT jeFRwJ"><svg class="sc-dcKlJK bKFTgj" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-dHZbTr ljgvjV">200<!-- --> </strong><div html="&lt;p&gt;Metric Updated&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz sc-dNpohg gAHTYt dFbgYC kfJzSr"><p>Metric Updated</p>
+</div></button></div><div><button class="sc-koGwOT fJrWIH"><svg class="sc-dcKlJK ecvXEv" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg><strong class="sc-dHZbTr ljgvjV">422<!-- --> </strong><div html="&lt;p&gt;The request could not be processed. You should check the body of the error for more details.&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz sc-dNpohg gAHTYt dFbgYC kfJzSr"><p>The request could not be processed. You should check the body of the error for more details.</p>
+</div></button></div></div></div><div class="sc-iQQCXo sc-gDpztx rcGrS ijAuiF"><div class="sc-dYwfDW bgkhSA"><button class="sc-lnzCgU brWdLq"><span type="put" class="sc-etVRix lcygMq http-verb put">put</span><span class="sc-iuoeev hwDgZR">/load</span><svg class="sc-dcKlJK hopFSn" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dRZyXS gTtGYM"><div class="sc-inRxyr iajdpk"><div html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dkIbVi"></div><div tabindex="0" role="button"><div class="sc-lhcVAQ kAcxZy"><span>https://opentelemetry/api/v1</span>/load</div></div></div></div></div><div><h3 class="sc-jJAtPt esvUOo"> <!-- -->Request samples<!-- --> </h3><div class="sc-brzPDJ ihptAH" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="react-tabs__tab react-tabs__tab--selected" role="tab" id="tab«R1569q»0" aria-selected="true" aria-disabled="false" aria-controls="panel«R1569q»0" tabindex="0" data-rttab="true">Payload</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel«R1569q»0" aria-labelledby="tab«R1569q»0"><div><div class="sc-bmCFzp hMtTVz"><span class="sc-fPyrPm ktNiSp">Content type</span><div class="sc-bpuAaX dmqyho">application/json</div></div><div class="sc-kmqAS jPYqSz"><div class="sc-eZbeWy ihHZyU"><div class="sc-lpbaSe elUMPN"><button><div class="sc-fsjlER jYcDQz">Copy</div></button></div><div class="sc-dTUlgT gAHTYt sc-gDVcuj JZxXP"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"load"</span>: <span class="token number">42</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div></div></div><div><h3 class="sc-jJAtPt esvUOo"> <!-- -->Response samples<!-- --> </h3><div class="sc-brzPDJ ihptAH" data-rttabs="true"><ul class="react-tabs__tab-list" role="tablist"><li class="tab-success react-tabs__tab--selected" role="tab" id="tab«R1769q»0" aria-selected="true" aria-disabled="false" aria-controls="panel«R1769q»0" tabindex="0" data-rttab="true">200</li><li class="tab-error" role="tab" id="tab«R1769q»1" aria-selected="false" aria-disabled="false" aria-controls="panel«R1769q»1" data-rttab="true">422</li></ul><div class="react-tabs__tab-panel react-tabs__tab-panel--selected" role="tabpanel" id="panel«R1769q»0" aria-labelledby="tab«R1769q»0"><div><div class="sc-bmCFzp hMtTVz"><span class="sc-fPyrPm ktNiSp">Content type</span><div class="sc-bpuAaX dmqyho">application/json</div></div><div class="sc-kmqAS jPYqSz"><div class="sc-eZbeWy ihHZyU"><div class="sc-lpbaSe elUMPN"><button><div class="sc-fsjlER jYcDQz">Copy</div></button></div><div class="sc-dTUlgT gAHTYt sc-gDVcuj JZxXP"><div class="redoc-json"><code><button class="collapser" aria-label="collapse"></button><span class="token punctuation">{</span><span class="ellipsis"></span><ul class="obj collapsible"><li><div class="hoverable "><span class="property token string">"load"</span>: <span class="token number">42</span></div></li></ul><span class="token punctuation">}</span></code></div></div></div></div></div></div><div class="react-tabs__tab-panel" role="tabpanel" id="panel«R1769q»1" aria-labelledby="tab«R1769q»1"></div></div></div></div></div></div><div id="tag/Traces" data-section-id="tag/Traces" class="sc-dIMoHT bTqehu"><div class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/Traces" aria-label="tag/Traces"></a>Traces</h2></div></div><div class="sc-fWnslK tJLWz"><div class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo redoc-markdown " html="&lt;p&gt;Endpoints relating to traces.&lt;/p&gt;
+"><p>Endpoints relating to traces.</p>
+</div></div></div><div id="tag/Traces/operation/delay" data-section-id="tag/Traces/operation/delay" class="sc-dIMoHT ftfFlx"><div data-section-id="operation/delay" id="operation/delay" class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/Traces/operation/delay" aria-label="tag/Traces/operation/delay"></a>Delay<!-- --> </h2><div class="sc-bpSLYx kPKKPE"><div html="&lt;p&gt;Includes a child trace and delays execution for 1 second.&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"><p>Includes a child trace and delays execution for 1 second.</p>
+</div></div><div class="sc-jHatCz hbKehx"><div class="sc-igQrDQ fEyRno"><h5 class="sc-cUiCeM sc-icgweO crXcll abBws">Authorizations:</h5><svg class="sc-dcKlJK jvLsrI" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jLKpbB bPuOE"><span class="sc-jBqEzj eIpQXo">None</span></div></div><div><h3 class="sc-fCdovG dsRSAK">Responses</h3><div><button class="sc-koGwOT dwQYyf" disabled=""><strong class="sc-dHZbTr ljgvjV">204<!-- --> </strong><div html="&lt;p&gt;Successful Request&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz sc-dNpohg gAHTYt dFbgYC kfJzSr"><p>Successful Request</p>
+</div></button></div></div></div><div class="sc-iQQCXo sc-gDpztx rcGrS ijAuiF"><div class="sc-dYwfDW bgkhSA"><button class="sc-lnzCgU brWdLq"><span type="get" class="sc-etVRix kZNoUr http-verb get">get</span><span class="sc-iuoeev hwDgZR">/delay</span><svg class="sc-dcKlJK hopFSn" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dRZyXS gTtGYM"><div class="sc-inRxyr iajdpk"><div html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dkIbVi"></div><div tabindex="0" role="button"><div class="sc-lhcVAQ kAcxZy"><span>https://opentelemetry/api/v1</span>/delay</div></div></div></div></div></div></div></div><div id="tag/Traces/operation/event" data-section-id="tag/Traces/operation/event" class="sc-dIMoHT ftfFlx"><div data-section-id="operation/event" id="operation/event" class="sc-kpOvIu ipybeG"><div class="sc-fWnslK hJuoxX"><h2 class="sc-jMsorb ivNaNl"><a class="sc-jScdur jRyfmD" href="#tag/Traces/operation/event" aria-label="tag/Traces/operation/event"></a>Event<!-- --> </h2><div class="sc-bpSLYx kPKKPE"><div html="&lt;p&gt;Records an event against the trace.&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz gAHTYt dLipZo"><p>Records an event against the trace.</p>
+</div></div><div class="sc-jHatCz hbKehx"><div class="sc-igQrDQ fEyRno"><h5 class="sc-cUiCeM sc-icgweO crXcll abBws">Authorizations:</h5><svg class="sc-dcKlJK jvLsrI" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></div><div class="sc-jLKpbB bPuOE"><span class="sc-jBqEzj eIpQXo">None</span></div></div><div><h3 class="sc-fCdovG dsRSAK">Responses</h3><div><button class="sc-koGwOT dwQYyf" disabled=""><strong class="sc-dHZbTr ljgvjV">204<!-- --> </strong><div html="&lt;p&gt;Successful Request&lt;/p&gt;
+" class="sc-dTUlgT sc-fhPBcz sc-dNpohg gAHTYt dFbgYC kfJzSr"><p>Successful Request</p>
+</div></button></div></div></div><div class="sc-iQQCXo sc-gDpztx rcGrS ijAuiF"><div class="sc-dYwfDW bgkhSA"><button class="sc-lnzCgU brWdLq"><span type="get" class="sc-etVRix kZNoUr http-verb get">get</span><span class="sc-iuoeev hwDgZR">/event</span><svg class="sc-dcKlJK hopFSn" style="margin-right:-25px" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></button><div aria-hidden="true" class="sc-dRZyXS gTtGYM"><div class="sc-inRxyr iajdpk"><div html="" class="sc-dTUlgT sc-fhPBcz gAHTYt dkIbVi"></div><div tabindex="0" role="button"><div class="sc-lhcVAQ kAcxZy"><span>https://opentelemetry/api/v1</span>/event</div></div></div></div></div></div></div></div></div><div class="sc-dPhEwk cCFEoS"></div></div></div>
+      <script>
+      const __redoc_state = {"menu":{"activeItemIdx":-1},"spec":{"data":{"openapi":"3.1.0","info":{"version":"1.0.0","title":"PHP OpenTelemetry Test Application","contact":{"email":"jess@mintopia.net"},"license":{"name":"MIT","url":"https://opensource.org/license/mit/"},"description":"# Introduction\n\nThis PHP application is designed to be an example of using OpenTelemetry inside an application to export metrics, logs\nand traces to any OpenTelemetry compatible provider.\n\nOpen Telemetry is a vendor-neutral CNCF project for standardised observability. It is widely supported by all\nobservability providers.\n\nSource code for this can be found at https://github.com/mintopia/php-opentelemetry-example.\n\n## Architecture\n\nThe main application is a Laravel 12 application running in a docker container using FrankenPHP. There is a scheduler\ncontainer running a task that exports metrics every minute. The metrics themselves are stored in a redis compatible\ncache, eg. Redis, ElastiCache, Valkey.\n\nAn Open Telemetry Collector container is running as a sidecar and takes the metrics and pushes them based on the\nconfiguration in `otel-collector-config.yaml` in the root. This is using the\n[AWS Open Telemetry Collector](https://github.com/aws-observability/aws-otel-collector)\nas it allows easy submission of data to CloudWatch and X-Ray. The supplied configuration also has an example of sending\ndata to [Honeycomb](https://www.honeycomb.io/).\n\n## Metrics\n\nThere are 3 metrics we export every minute.\n\n- `widget-count` - An Open Telemetry Counter. This can only go up and is incremented using the `/count` endpoint.\n- `widget-number` - An Open Telemetry Up Down Counter. This can be increased and decreased using the `/up` and `/down` endpoints.\n- `load` - An Open Telemetry Gauge. This can be set using the `/load` endpoint. It is intended to be used to simulate load on the application and to be used for autoscaling decisions.\n\n## Technology Choices\n\nLaravel 12 was used as an easy to implement and understandable PHP framework for this. The Open Telemetry integration is\ncustom written using the Open Telemetry SDK. I considered using the\n[Spatie Laravel Open Telemetry](https://spatie.be/docs/laravel-open-telemetry/v1/introduction) library, but found that\nit wasn't outputting OTLP HTTP JSON formatted requests to the OpenTelemetry collector.\n\nLaravel Octane and FrankenPHP are used for running the application. This would allow for high performance in production\nenvironments.\n\nPHPStan and PHP Code Beautifier and Fixer is used to ensure code quality and adherence to standards.\n\nAPI documentation is written as an OpenAPI specification, bundled and generated by Redocly.\n"},"tags":[{"name":"General","description":"Endpoints that don't belong in other categories."},{"name":"Metrics","description":"Endpoints relating to metrics."},{"name":"Traces","description":"Endpoints relating to traces."}],"servers":[{"url":"https://opentelemetry/api/v1"}],"paths":{"/ping":{"get":{"tags":["General"],"summary":"Ping","description":"Returns basic information about the API and the current user. This will include your IP address, the API timestamp and the version.","operationId":"ping","security":[{}],"responses":{"200":{"description":"API Ping Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Ping"}}}}}}},"/count":{"post":{"tags":["Metrics"],"summary":"Count","description":"Increases the `widget-count` metric by 1","operationId":"count","security":[{}],"responses":{"200":{"description":"Metric Updated","content":{"application/json":{"schema":{"$ref":"#/components/schemas/MetricValue"}}}}}}},"/up":{"post":{"tags":["Metrics"],"summary":"Up","description":"Increases the `widget-numbers` metric by 1","operationId":"up","security":[{}],"responses":{"200":{"description":"Metric Updated","content":{"application/json":{"schema":{"$ref":"#/components/schemas/MetricValue"}}}}}}},"/down":{"post":{"tags":["Metrics"],"summary":"Down","description":"Decreases the `widget-numbers` metric by 1","operationId":"down","security":[{}],"responses":{"200":{"description":"Metric Updated","content":{"application/json":{"schema":{"$ref":"#/components/schemas/MetricValue"}}}}}}},"/load":{"put":{"tags":["Metrics"],"summary":"Load","description":"Sets the `load` metric to a specific value between 1 and 100.","operationId":"load","security":[{}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/load"}}}},"responses":{"200":{"description":"Metric Updated","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Load"}}}},"422":{"$ref":"#/components/responses/UnprocessableEntity"}}}},"/delay":{"get":{"tags":["Traces"],"summary":"Delay","description":"Includes a child trace and delays execution for 1 second.","operationId":"delay","security":[{}],"responses":{"204":{"description":"Successful Request"}}}},"/event":{"get":{"tags":["Traces"],"summary":"Event","description":"Records an event against the trace.","operationId":"event","security":[{}],"responses":{"204":{"description":"Successful Request"}}}}},"components":{"schemas":{"Ping":{"type":"object","properties":{"timestamp":{"type":"string","examples":["2023-10-03T14:41:31+00:00"],"format":"date-time","description":"Current timestamp in ISO 8601 format"},"version":{"type":"string","examples":["1.0.0"],"description":"Version number of the API"},"ip":{"type":"string","examples":["127.0.0.1","::1"],"format":"ip","description":"IP address of client making requests"}}},"MetricValue":{"type":"object","properties":{"value":{"type":"integer","examples":[42],"description":"The current value of the `widget-count` metric."}}},"load":{"type":"object","properties":{"load":{"type":"integer","description":"The value to set the load metric to. This must be between 1 and 100.","examples":[42]}}},"Load":{"type":"object","properties":{"load":{"type":"integer","examples":[42],"description":"The current value of the `load` metric."}}}},"responses":{"UnprocessableEntity":{"description":"The request could not be processed. You should check the body of the error for more details.","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","examples":["The given data was invalid."]},"errors":{"type":"object","description":"An object containing the errors for each field in the input","examples":[{"name":["The name field is required","The name field must be more than 8 characters"],"hostname":["the hostname field is required"]}]}}}}}}}}}},"searchIndex":{"store":["section/Introduction","section/Introduction/Architecture","section/Introduction/Metrics","section/Introduction/Technology-Choices","tag/General","tag/General/operation/ping","tag/Metrics","tag/Metrics/operation/count","tag/Metrics/operation/up","tag/Metrics/operation/down","tag/Metrics/operation/load","tag/Traces","tag/Traces/operation/delay","tag/Traces/operation/event"],"index":{"version":"2.3.9","fields":["title","description"],"fieldVectors":[["title/0",[0,2.367]],["description/0",[1,1.428,2,1.409,3,1.836,4,1.428,5,0.96,6,2.097,7,1.836,8,1.16,9,0.284,10,1.836,11,0.8,12,1.428,13,2.695,14,0.96,15,0.96,16,1.836,17,1.836,18,1.836,19,1.836,20,2.695,21,1.836,22,1.836,23,1.836,24,1.428,25,1.428,26,1.836]],["title/1",[27,2.367]],["description/1",[2,1.044,4,0.968,5,1.044,8,0.786,9,0.388,12,0.968,14,1.044,15,1.044,28,1.244,29,0.968,30,0.968,31,1.947,32,1.244,33,2.502,34,0.968,35,1.244,36,1.244,37,0.968,38,1.244,39,1.244,40,1.997,41,1.244,42,1.244,43,1.244,44,1.244,45,0.968,46,1.244,47,1.244,48,1.244,49,1.244,50,1.997,51,1.244,52,1.244,53,1.244,54,1.244,55,0.968,56,0.968,57,1.244,58,1.997,59,1.244,60,1.244,61,1.244,62,1.244,63,1.244]],["title/2",[9,0.367]],["description/2",[2,0.729,5,1.735,8,0.881,9,0.216,14,1.41,15,1.41,37,1.084,64,1.394,65,3.52,66,1.084,67,2.186,68,1.394,69,1.704,70,1.394,71,0.881,72,1.41,73,0.881,74,1.381,75,0.881,76,1.084,77,1.704,78,1.394,79,1.084,80,1.394,81,1.394,82,1.394,83,1.394]],["title/3",[84,1.7,85,1.7]],["description/3",[1,1.456,2,0.6,5,1.574,6,0.893,14,1.239,15,0.979,24,1.456,25,0.893,29,1.844,30,0.893,31,0.893,34,0.893,45,0.893,55,0.893,56,0.893,86,1.148,87,1.148,88,1.148,89,1.148,90,1.148,91,1.871,92,1.148,93,1.148,94,1.148,95,1.148,96,1.148,97,1.148,98,1.148,99,1.148,100,1.148,101,1.148,102,1.148,103,1.148,104,1.148,105,1.148,106,1.148,107,1.148,108,1.148,109,1.148,110,1.148,111,1.148,112,1.148,113,1.148,114,1.148,115,1.148,116,0.893,117,1.148,118,1.148,119,0.893,120,1.148,121,0.893,122,1.148]],["title/4",[121,1.842]],["description/4",[72,1.772,123,3.389,124,3.389,125,3.389]],["title/5",[126,1.842]],["description/5",[116,2.688,126,2.04,127,2.621,128,2.621,129,2.621,130,2.621,131,2.621,132,2.04,133,2.621,134,2.621,135,2.621,136,2.621]],["title/6",[9,0.367]],["description/6",[9,0.543,72,1.832,137,2.726]],["title/7",[71,1.496]],["description/7",[9,0.508,66,2.554,71,2.075,75,2.075,138,1.43]],["title/8",[69,1.496]],["description/8",[9,0.508,69,2.075,73,2.075,75,2.075,138,1.43]],["title/9",[74,1.496]],["description/9",[9,0.508,73,2.075,74,2.075,76,2.554,138,1.43]],["title/10",[77,1.496]],["description/10",[9,0.452,77,2.339,79,2.268,119,2.268,138,1.27,139,2.915,140,2.915,141,2.915]],["title/11",[11,1.031]],["description/11",[11,1.527,72,1.832,137,2.726]],["title/12",[142,1.842]],["description/12",[11,1.307,132,2.334,138,1.307,142,2.932,143,2.999,144,2.999,145,2.999]],["title/13",[146,1.842]],["description/13",[11,1.43,146,3.1,147,3.282,148,3.282]]],"invertedIndex":[["",{"_index":65,"title":{},"description":{"2":{}}}],["1",{"_index":138,"title":{},"description":{"7":{},"8":{},"9":{},"10":{},"12":{}}}],["100",{"_index":141,"title":{},"description":{"10":{}}}],["12",{"_index":30,"title":{},"description":{"1":{},"3":{}}}],["3",{"_index":64,"title":{},"description":{"2":{}}}],["address",{"_index":134,"title":{},"description":{"5":{}}}],["adher",{"_index":114,"title":{},"description":{"3":{}}}],["against",{"_index":148,"title":{},"description":{"13":{}}}],["allow",{"_index":55,"title":{},"description":{"1":{},"3":{}}}],["api",{"_index":116,"title":{},"description":{"3":{},"5":{}}}],["applic",{"_index":2,"title":{},"description":{"0":{},"1":{},"2":{},"3":{}}}],["architectur",{"_index":27,"title":{"1":{}},"description":{}}],["autosc",{"_index":82,"title":{},"description":{"2":{}}}],["aw",{"_index":53,"title":{},"description":{"1":{}}}],["base",{"_index":49,"title":{},"description":{"1":{}}}],["basic",{"_index":128,"title":{},"description":{"5":{}}}],["beautifi",{"_index":110,"title":{},"description":{"3":{}}}],["belong",{"_index":124,"title":{},"description":{"4":{}}}],["between",{"_index":140,"title":{},"description":{"10":{}}}],["bundl",{"_index":120,"title":{},"description":{"3":{}}}],["cach",{"_index":41,"title":{},"description":{"1":{}}}],["categori",{"_index":125,"title":{},"description":{"4":{}}}],["child",{"_index":143,"title":{},"description":{"12":{}}}],["choic",{"_index":85,"title":{"3":{}},"description":{}}],["cloudwatch",{"_index":59,"title":{},"description":{"1":{}}}],["cncf",{"_index":17,"title":{},"description":{"0":{}}}],["code",{"_index":24,"title":{},"description":{"0":{},"3":{}}}],["collector",{"_index":45,"title":{},"description":{"1":{},"3":{}}}],["collector](https://github.com/aws-observability/aws-otel-collector",{"_index":54,"title":{},"description":{"1":{}}}],["compat",{"_index":12,"title":{},"description":{"0":{},"1":{}}}],["configur",{"_index":50,"title":{},"description":{"1":{}}}],["consid",{"_index":93,"title":{},"description":{"3":{}}}],["contain",{"_index":33,"title":{},"description":{"1":{}}}],["count",{"_index":71,"title":{"7":{}},"description":{"2":{},"7":{}}}],["counter",{"_index":67,"title":{},"description":{"2":{}}}],["current",{"_index":130,"title":{},"description":{"5":{}}}],["custom",{"_index":90,"title":{},"description":{"3":{}}}],["data",{"_index":58,"title":{},"description":{"1":{}}}],["decis",{"_index":83,"title":{},"description":{"2":{}}}],["decreas",{"_index":76,"title":{},"description":{"2":{},"9":{}}}],["delay",{"_index":142,"title":{"12":{}},"description":{"12":{}}}],["design",{"_index":3,"title":{},"description":{"0":{}}}],["docker",{"_index":32,"title":{},"description":{"1":{}}}],["document",{"_index":117,"title":{},"description":{"3":{}}}],["don't",{"_index":123,"title":{},"description":{"4":{}}}],["down",{"_index":74,"title":{"9":{}},"description":{"2":{},"9":{}}}],["easi",{"_index":56,"title":{},"description":{"1":{},"3":{}}}],["eg",{"_index":42,"title":{},"description":{"1":{}}}],["elasticach",{"_index":43,"title":{},"description":{"1":{}}}],["endpoint",{"_index":72,"title":{},"description":{"2":{},"4":{},"6":{},"11":{}}}],["ensur",{"_index":112,"title":{},"description":{"3":{}}}],["environ",{"_index":108,"title":{},"description":{"3":{}}}],["event",{"_index":146,"title":{"13":{}},"description":{"13":{}}}],["exampl",{"_index":4,"title":{},"description":{"0":{},"1":{}}}],["execut",{"_index":144,"title":{},"description":{"12":{}}}],["export",{"_index":8,"title":{},"description":{"0":{},"1":{},"2":{}}}],["fixer",{"_index":111,"title":{},"description":{"3":{}}}],["format",{"_index":102,"title":{},"description":{"3":{}}}],["found",{"_index":25,"title":{},"description":{"0":{},"3":{}}}],["framework",{"_index":88,"title":{},"description":{"3":{}}}],["frankenphp",{"_index":34,"title":{},"description":{"1":{},"3":{}}}],["gaug",{"_index":78,"title":{},"description":{"2":{}}}],["gener",{"_index":121,"title":{"4":{}},"description":{"3":{}}}],["go",{"_index":68,"title":{},"description":{"2":{}}}],["high",{"_index":105,"title":{},"description":{"3":{}}}],["honeycomb](https://www.honeycomb.io",{"_index":63,"title":{},"description":{"1":{}}}],["http",{"_index":100,"title":{},"description":{"3":{}}}],["https://github.com/mintopia/php-opentelemetry-exampl",{"_index":26,"title":{},"description":{"0":{}}}],["implement",{"_index":86,"title":{},"description":{"3":{}}}],["includ",{"_index":132,"title":{},"description":{"5":{},"12":{}}}],["increas",{"_index":75,"title":{},"description":{"2":{},"7":{},"8":{}}}],["increment",{"_index":70,"title":{},"description":{"2":{}}}],["inform",{"_index":129,"title":{},"description":{"5":{}}}],["insid",{"_index":7,"title":{},"description":{"0":{}}}],["integr",{"_index":89,"title":{},"description":{"3":{}}}],["intend",{"_index":80,"title":{},"description":{"2":{}}}],["introduct",{"_index":0,"title":{"0":{}},"description":{}}],["ip",{"_index":133,"title":{},"description":{"5":{}}}],["json",{"_index":101,"title":{},"description":{"3":{}}}],["laravel",{"_index":29,"title":{},"description":{"1":{},"3":{}}}],["librari",{"_index":96,"title":{},"description":{"3":{}}}],["load",{"_index":77,"title":{"10":{}},"description":{"2":{},"10":{}}}],["log",{"_index":10,"title":{},"description":{"0":{}}}],["main",{"_index":28,"title":{},"description":{"1":{}}}],["metric",{"_index":9,"title":{"2":{},"6":{}},"description":{"0":{},"1":{},"2":{},"6":{},"7":{},"8":{},"9":{},"10":{}}}],["minut",{"_index":37,"title":{},"description":{"1":{},"2":{}}}],["observ",{"_index":20,"title":{},"description":{"0":{}}}],["octan",{"_index":104,"title":{},"description":{"3":{}}}],["open",{"_index":14,"title":{},"description":{"0":{},"1":{},"2":{},"3":{}}}],["openapi",{"_index":118,"title":{},"description":{"3":{}}}],["opentelemetri",{"_index":6,"title":{},"description":{"0":{},"3":{}}}],["otel-collector-config.yaml",{"_index":51,"title":{},"description":{"1":{}}}],["otlp",{"_index":99,"title":{},"description":{"3":{}}}],["output",{"_index":98,"title":{},"description":{"3":{}}}],["perform",{"_index":106,"title":{},"description":{"3":{}}}],["php",{"_index":1,"title":{},"description":{"0":{},"3":{}}}],["phpstan",{"_index":109,"title":{},"description":{"3":{}}}],["ping",{"_index":126,"title":{"5":{}},"description":{"5":{}}}],["product",{"_index":107,"title":{},"description":{"3":{}}}],["project",{"_index":18,"title":{},"description":{"0":{}}}],["provid",{"_index":13,"title":{},"description":{"0":{}}}],["push",{"_index":48,"title":{},"description":{"1":{}}}],["qualiti",{"_index":113,"title":{},"description":{"3":{}}}],["record",{"_index":147,"title":{},"description":{"13":{}}}],["redi",{"_index":40,"title":{},"description":{"1":{}}}],["redocli",{"_index":122,"title":{},"description":{"3":{}}}],["relat",{"_index":137,"title":{},"description":{"6":{},"11":{}}}],["request",{"_index":103,"title":{},"description":{"3":{}}}],["return",{"_index":127,"title":{},"description":{"5":{}}}],["root",{"_index":52,"title":{},"description":{"1":{}}}],["run",{"_index":31,"title":{},"description":{"1":{},"3":{}}}],["schedul",{"_index":35,"title":{},"description":{"1":{}}}],["sdk",{"_index":92,"title":{},"description":{"3":{}}}],["second",{"_index":145,"title":{},"description":{"12":{}}}],["send",{"_index":62,"title":{},"description":{"1":{}}}],["set",{"_index":79,"title":{},"description":{"2":{},"10":{}}}],["sidecar",{"_index":46,"title":{},"description":{"1":{}}}],["simul",{"_index":81,"title":{},"description":{"2":{}}}],["sourc",{"_index":23,"title":{},"description":{"0":{}}}],["spati",{"_index":94,"title":{},"description":{"3":{}}}],["specif",{"_index":119,"title":{},"description":{"3":{},"10":{}}}],["standard",{"_index":115,"title":{},"description":{"3":{}}}],["standardis",{"_index":19,"title":{},"description":{"0":{}}}],["store",{"_index":39,"title":{},"description":{"1":{}}}],["submiss",{"_index":57,"title":{},"description":{"1":{}}}],["suppli",{"_index":61,"title":{},"description":{"1":{}}}],["support",{"_index":22,"title":{},"description":{"0":{}}}],["take",{"_index":47,"title":{},"description":{"1":{}}}],["task",{"_index":36,"title":{},"description":{"1":{}}}],["technolog",{"_index":84,"title":{"3":{}},"description":{}}],["telemetri",{"_index":15,"title":{},"description":{"0":{},"1":{},"2":{},"3":{}}}],["telemetry](https://spatie.be/docs/laravel-open-telemetry/v1/introduct",{"_index":95,"title":{},"description":{"3":{}}}],["themselv",{"_index":38,"title":{},"description":{"1":{}}}],["timestamp",{"_index":135,"title":{},"description":{"5":{}}}],["trace",{"_index":11,"title":{"11":{}},"description":{"0":{},"11":{},"12":{},"13":{}}}],["understand",{"_index":87,"title":{},"description":{"3":{}}}],["up",{"_index":69,"title":{"8":{}},"description":{"2":{},"8":{}}}],["us",{"_index":5,"title":{},"description":{"0":{},"1":{},"2":{},"3":{}}}],["user",{"_index":131,"title":{},"description":{"5":{}}}],["valkey",{"_index":44,"title":{},"description":{"1":{}}}],["valu",{"_index":139,"title":{},"description":{"10":{}}}],["vendor-neutr",{"_index":16,"title":{},"description":{"0":{}}}],["version",{"_index":136,"title":{},"description":{"5":{}}}],["wasn't",{"_index":97,"title":{},"description":{"3":{}}}],["wide",{"_index":21,"title":{},"description":{"0":{}}}],["widget-count",{"_index":66,"title":{},"description":{"2":{},"7":{}}}],["widget-numb",{"_index":73,"title":{},"description":{"2":{},"8":{},"9":{}}}],["written",{"_index":91,"title":{},"description":{"3":{}}}],["x-ray",{"_index":60,"title":{},"description":{"1":{}}}]],"pipeline":[]}},"options":{"htmlTemplate":"./docs/template/index.html","theme":{"colors":{"primary":{"main":"#00ada1"}}},"generateCodeSamples":{"languages":[{"lang":"curl"},{"lang":"Node.js"},{"lang":"JavaScript"},{"lang":"PHP"},{"lang":"Python"}]}}};
+
+      var container = document.getElementById('redoc');
+      Redoc.hydrate(__redoc_state, container);
+
+      </script>
+  </body>
+</html>

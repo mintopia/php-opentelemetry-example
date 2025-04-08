@@ -1,0 +1,7 @@
+type: object
+properties:
+  load:
+    type: integer
+    examples:
+      - 42
+    description: The current value of the `load` metric.

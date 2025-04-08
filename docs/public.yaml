@@ -1,0 +1,35 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: PHP OpenTelemetry Test Application
+  contact:
+    email: jess@mintopia.net
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit/
+  description:
+    $ref: './description.md'
+tags:
+  - name: General
+    description: Endpoints that don't belong in other categories.
+  - name: Metrics
+    description: Endpoints relating to metrics.
+  - name: Traces
+    description: Endpoints relating to traces.
+servers:
+  - url: https://opentelemetry/api/v1
+paths:
+  /ping:
+    $ref: paths/ping.yaml
+  /count:
+    $ref: paths/count.yaml
+  /up:
+    $ref: paths/up.yaml
+  /down:
+    $ref: paths/down.yaml
+  /load:
+    $ref: paths/load.yaml
+  /delay:
+    $ref: paths/delay.yaml
+  /event:
+    $ref: paths/event.yaml

@@ -1,0 +1,22 @@
+put:
+  tags:
+    - Metrics
+  summary: Load
+  description: Sets the `load` metric to a specific value between 1 and 100.
+  operationId: load
+  security:
+    - {}
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../components/requests/load.yaml'
+  responses:
+    '200':
+      description: Metric Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Load.yaml
+    '422':
+      $ref: '../components/responses/UnprocessableEntity.yaml'

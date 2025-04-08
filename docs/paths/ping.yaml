@@ -1,0 +1,15 @@
+get:
+  tags:
+    - General
+  summary: Ping
+  description: Returns basic information about the API and the current user. This will include your IP address, the API timestamp and the version.
+  operationId: ping
+  security:
+    - {}
+  responses:
+    '200':
+      description: API Ping Response
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Ping.yaml

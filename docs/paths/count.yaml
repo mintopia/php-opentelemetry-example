@@ -1,0 +1,15 @@
+post:
+  tags:
+    - Metrics
+  summary: Count
+  description: Increases the `widget-count` metric by 1
+  operationId: count
+  security:
+    - {}
+  responses:
+    '200':
+      description: Metric Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/MetricValue.yaml

@@ -1,0 +1,7 @@
+type: object
+properties:
+  load:
+    type: integer
+    description: The value to set the load metric to. This must be between 1 and 100.
+    examples:
+      - 42

@@ -1,0 +1,11 @@
+get:
+  tags:
+    - Traces
+  summary: Event
+  description: Records an event against the trace.
+  operationId: event
+  security:
+    - {}
+  responses:
+    '204':
+      description: Successful Request

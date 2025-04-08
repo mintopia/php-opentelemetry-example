@@ -1,0 +1,15 @@
+post:
+  tags:
+    - Metrics
+  summary: Up
+  description: Increases the `widget-numbers` metric by 1
+  operationId: up
+  security:
+    - {}
+  responses:
+    '200':
+      description: Metric Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/MetricValue.yaml

@@ -1,0 +1,15 @@
+post:
+  tags:
+    - Metrics
+  summary: Down
+  description: Decreases the `widget-numbers` metric by 1
+  operationId: down
+  security:
+    - {}
+  responses:
+    '200':
+      description: Metric Updated
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/MetricValue.yaml

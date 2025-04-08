@@ -1,0 +1,21 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "docs:start": "redocly preview-docs public@v1 --port=8010",
+        "docs:bundle": "redocly bundle public@v1 -o docs/bundles/public.yaml",
+        "docs:test": "redocly lint public@v1",
+        "docs:build": "redocly build-docs public@v1 --output=docs/html/public.html"
+    },
+    "devDependencies": {
+        "@redocly/cli": "^1.34.1",
+        "@tailwindcss/vite": "^4.0.0",
+        "axios": "^1.8.2",
+        "chokidar": "^4.0.3",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^1.2.0",
+        "vite": "^6.0.11"
+    }
+}

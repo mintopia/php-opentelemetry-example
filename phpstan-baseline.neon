@@ -1,0 +1,19 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Parameter \#1 \$transport of class OpenTelemetry\\Contrib\\Otlp\\LogsExporter constructor expects OpenTelemetry\\SDK\\Common\\Export\\TransportInterface\<''application/json''\|''application/x\-ndjson''\|''application/x…''\>, OpenTelemetry\\SDK\\Common\\Export\\Http\\PsrTransport given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/OpenTelemetryProvider.php
+
+		-
+			message: '#^Parameter \#1 \$transport of class OpenTelemetry\\Contrib\\Otlp\\MetricExporter constructor expects OpenTelemetry\\SDK\\Common\\Export\\TransportInterface\<''application/json''\|''application/x\-ndjson''\|''application/x…''\>, OpenTelemetry\\SDK\\Common\\Export\\Http\\PsrTransport given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/OpenTelemetryProvider.php
+
+		-
+			message: '#^Parameter \#1 \$transport of class OpenTelemetry\\Contrib\\Otlp\\SpanExporter constructor expects OpenTelemetry\\SDK\\Common\\Export\\TransportInterface\<''application/json''\|''application/x\-ndjson''\|''application/x…''\>, OpenTelemetry\\SDK\\Common\\Export\\Http\\PsrTransport given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/OpenTelemetryProvider.php
