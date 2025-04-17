@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('app:update-metrics')->everyMinute();
+Schedule::command('app:update-metrics')->everyMinute()->onOneServer();

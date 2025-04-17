@@ -33,8 +33,10 @@ COPY --from=npm /app /app
 COPY docker/production/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+COPY docker/Caddyfile /
+
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php",  "artisan",  "octane:frankenphp"]
+CMD ["php",  "artisan",  "octane:frankenphp", "--caddyfile=/Caddyfile", "--admin-host=0.0.0.0", "--log-level=INFO"]
 
 RUN install-php-extensions \
     pcntl \

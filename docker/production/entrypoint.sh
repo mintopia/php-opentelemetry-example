@@ -1,8 +1,7 @@
 #!/bin/sh
 set -e
 
-# Clear and re-cache artisan routes
-php /app/artisan route:clear -n
-php /app/artisan route:cache -n
+# Optimize the application
+php /app/artisan optimize
 
 exec "$@"

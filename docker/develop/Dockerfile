@@ -5,6 +5,9 @@ RUN apk add --update nodejs npm && \
     install-php-extensions \
     pcntl \
     redis \
-    bcmath
+    bcmath \
+    xdebug
 
-ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--watch", "--poll"]
+COPY docker/Caddyfile /
+
+ENTRYPOINT ["php", "artisan", "octane:frankenphp", "--watch", "--poll", "--admin-host=0.0.0.0", "--caddyfile=/Caddyfile", "--log-level=DEBUG"]
